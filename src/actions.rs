@@ -11,6 +11,7 @@ pub enum Action {
     Attack,
     Burn,
     Cry,
+    Miso_Attack,
     Skip,
     UseItem,
 }
@@ -21,6 +22,7 @@ impl Action {
             Action::Attack => attack,
             Action::Burn => burn,
             Action::Cry => cry,
+            Action::Miso_Attack => miso_attack,
             Action::Skip => skip,
             Action::UseItem => use_item,
         }
@@ -33,6 +35,7 @@ impl fmt::Display for Action {
             Action::Attack => "Attack".to_string(),
             Action::Burn => "Burn".to_string(),
             Action::Cry => "Cry".to_string(),
+            Action::Miso_Attack => "Misogynist Attack".to_string(),
             Action::Skip => "Skip".to_string(),
             Action::UseItem => "Use Item".to_string(),
         };
@@ -69,8 +72,6 @@ fn burn(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
                 combatants[*target].hp
         );
 
-        combatants[*target].damage_over_time += 1;
-
         println! (
             "{} burnt the shit out of {} for {} damage!",
             combatants[caster],
@@ -82,6 +83,8 @@ fn burn(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
             combatants[*target],
             combatants[*target].damage_over_time,
         );
+        
+        combatants[*target].damage_over_time += 1;
     }
 }
 
@@ -94,6 +97,45 @@ fn cry(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
             combatants[caster],
         );
     };
+}
+
+fn miso_attack(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
+    for target in targets {
+        if combatants[*target].isMale {
+            combatants[*target].hp -= std::cmp::min(
+                combatants[caster].physical_attack / 2 - combatants[*target].physical_resistance,
+                combatants[*target].hp
+            );
+            
+            println! (
+                "{} saw that {} was a man and overestimated him, hitting for {} damage",
+                combatants[caster],
+                combatants[*target],
+                combatants[caster].physical_attack / 2 - combatants[*target].physical_resistance,
+            );
+        }
+        else {
+            combatants[*target].hp -= std::cmp::min(
+                combatants[caster].physical_attack * 2 - combatants[*target].physical_resistance,
+                combatants[*target].hp
+            );
+
+            println! (
+                "{} saw that {} was a woman and was filled with rage, hitting for {} damage",
+                combatants[caster],
+                combatants[*target],
+                combatants[caster].physical_attack * 2 - combatants[*target].physical_resistance,
+            );
+
+            combatants[caster].physical_attack /= 2;
+            combatants[caster].physical_resistance /= 2;
+
+            println! (
+                "{}'s saw this and harassed him to the point he could no longer attend the gym. As a result, he lost half of his physical attack and resistance.",
+                combatants[caster],
+            );
+        }
+    }
 }
 
 fn skip(combatants: &mut [&mut Combatant], _: &[usize], caster: usize) {

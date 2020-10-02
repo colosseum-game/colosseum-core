@@ -13,6 +13,8 @@ pub struct Combatant {
     pub speed: u32,
     pub flammability: u32,
     pub damage_over_time: u32,
+    pub isMale: bool,
+    pub isMiso: bool,
     pub actions: Vec::<Action>,
 }
 
