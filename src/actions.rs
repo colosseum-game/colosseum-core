@@ -7,12 +7,14 @@ use crate::{
     items::Item,
 };
 
+use std::fmt;
+
 #[derive(Debug)]
 pub enum Action {
     Attack,
     Burn,
     Cry,
-    Miso_Attack,
+    MisoAttack,
     Skip,
     UseItem,
 }
@@ -23,7 +25,7 @@ impl Action {
             Action::Attack => attack,
             Action::Burn => burn,
             Action::Cry => cry,
-            Action::Miso_Attack => miso_attack,
+            Action::MisoAttack => miso_attack,
             Action::Skip => skip,
             Action::UseItem => use_item,
         }
@@ -36,7 +38,7 @@ impl fmt::Display for Action {
             Action::Attack => "Attack".to_string(),
             Action::Burn => "Burn".to_string(),
             Action::Cry => "Cry".to_string(),
-            Action::Miso_Attack => "Misogynist Attack".to_string(),
+            Action::MisoAttack => "Misogynist Attack".to_string(),
             Action::Skip => "Skip".to_string(),
             Action::UseItem => "Use Item".to_string(),
         };
@@ -49,7 +51,7 @@ fn attack(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
     for target in targets {
         if combatants[*target].physical_resistance > combatants[caster].physical_attack { continue; }
 
-        std::cmp::min(
+        combatants[*target].hp -= std::cmp::min(
             combatants[caster].physical_attack - std::cmp::min(
                 combatants[*target].physical_resistance,
                 combatants[caster].physical_attack
@@ -71,7 +73,7 @@ fn burn(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
     for target in targets {
         let temp: u32 = combatants[*target].hp;
 
-        std::cmp::min(
+        combatants[*target].hp -= std::cmp::min(
             combatants[caster].flammability - std::cmp::min(
                 combatants[*target].physical_resistance,
                 combatants[caster].flammability
@@ -110,7 +112,7 @@ fn miso_attack(combatants: &mut [&mut Combatant], targets: &[usize], caster: usi
     for target in targets {
         match combatants[*target].gender {
             Gender::Male => {
-                std::cmp::min(
+                combatants[*target].hp -= std::cmp::min(
                     combatants[caster].physical_attack / 2 - std::cmp::min(
                         combatants[*target].physical_resistance,
                         combatants[caster].physical_attack / 2
@@ -126,7 +128,7 @@ fn miso_attack(combatants: &mut [&mut Combatant], targets: &[usize], caster: usi
                 );
             },
             _ => {
-                std::cmp::min(
+                combatants[*target].hp -= std::cmp::min(
                     combatants[caster].physical_attack * 2 - std::cmp::min(
                         combatants[*target].physical_resistance,
                         combatants[caster].physical_attack * 2
