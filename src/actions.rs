@@ -1,5 +1,8 @@
 use crate::{
-    combatant::Combatant,
+    combatant::{
+        Combatant,
+        Gender,
+    },
     io,
     items::Item,
 };
@@ -66,7 +69,7 @@ fn attack(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
 fn burn(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
     for target in targets {
         let temp: u32 = combatants[*target].hp;
-        
+
         combatants[*target].hp -= std::cmp::min(
                 combatants[*target].flammability, 
                 combatants[*target].hp
@@ -83,7 +86,7 @@ fn burn(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
             combatants[*target],
             combatants[*target].damage_over_time,
         );
-        
+
         combatants[*target].damage_over_time += 1;
     }
 }
@@ -101,39 +104,41 @@ fn cry(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
 
 fn miso_attack(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
     for target in targets {
-        if combatants[*target].isMale {
-            combatants[*target].hp -= std::cmp::min(
-                combatants[caster].physical_attack / 2 - combatants[*target].physical_resistance,
-                combatants[*target].hp
-            );
-            
-            println! (
-                "{} saw that {} was a man and overestimated him, hitting for {} damage",
-                combatants[caster],
-                combatants[*target],
-                combatants[caster].physical_attack / 2 - combatants[*target].physical_resistance,
-            );
-        }
-        else {
-            combatants[*target].hp -= std::cmp::min(
-                combatants[caster].physical_attack * 2 - combatants[*target].physical_resistance,
-                combatants[*target].hp
-            );
+        match combatants[*target].gender {
+            Gender::Male => {
+                combatants[*target].hp -= std::cmp::min(
+                    combatants[caster].physical_attack / 2 - combatants[*target].physical_resistance,
+                    combatants[*target].hp
+                );
 
-            println! (
-                "{} saw that {} was a woman and was filled with rage, hitting for {} damage",
-                combatants[caster],
-                combatants[*target],
-                combatants[caster].physical_attack * 2 - combatants[*target].physical_resistance,
-            );
+                println! (
+                    "{} saw that {} was a man and overestimated him, hitting for {} damage",
+                    combatants[caster],
+                    combatants[*target],
+                    combatants[caster].physical_attack / 2 - combatants[*target].physical_resistance,
+                );
+            },
+            _ => {
+                combatants[*target].hp -= std::cmp::min(
+                    combatants[caster].physical_attack * 2 - combatants[*target].physical_resistance,
+                    combatants[*target].hp
+                );
 
-            combatants[caster].physical_attack /= 2;
-            combatants[caster].physical_resistance /= 2;
+                println! (
+                    "{} saw that {} was a woman and was filled with rage, hitting for {} damage",
+                    combatants[caster],
+                    combatants[*target],
+                    combatants[caster].physical_attack * 2 - combatants[*target].physical_resistance,
+                );
 
-            println! (
-                "{}'s saw this and harassed him to the point he could no longer attend the gym. As a result, he lost half of his physical attack and resistance.",
-                combatants[caster],
-            );
+                combatants[caster].physical_attack /= 2;
+                combatants[caster].physical_resistance /= 2;
+
+                println! (
+                    "{}'s saw this and harassed him to the point he could no longer attend the gym. As a result, he lost half of his physical attack and resistance.",
+                    combatants[caster],
+                );
+            }
         }
     }
 }

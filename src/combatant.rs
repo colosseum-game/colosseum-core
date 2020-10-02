@@ -3,6 +3,13 @@ use crate::actions::Action;
 use std::fmt;
 
 #[derive(Debug)]
+pub enum Gender {
+    None,
+    Female,
+    Male,
+}
+
+#[derive(Debug)]
 pub struct Combatant {
     pub name: String,
     pub hp: u32,
@@ -13,7 +20,7 @@ pub struct Combatant {
     pub speed: u32,
     pub flammability: u32,
     pub damage_over_time: u32,
-    pub isMale: bool,
+    pub gender: Gender,
     pub isMiso: bool,
     pub actions: Vec::<Action>,
 }
