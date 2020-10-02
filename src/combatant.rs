@@ -11,6 +11,7 @@ pub struct Combatant {
     pub physical_resistance: u32,
     pub intelligence: u32,
     pub speed: u32,
+    pub flammability: u32,
     pub actions: Vec::<Action>,
 }
 

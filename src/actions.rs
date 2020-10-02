@@ -9,6 +9,7 @@ use std::fmt;
 #[derive(Debug)]
 pub enum Action {
     Attack,
+    Burn,
     Cry,
     Skip,
     UseItem,
@@ -18,6 +19,7 @@ impl Action {
     pub fn function(&self) -> fn(&mut [&mut Combatant], &[usize], usize) {
         match *self {
             Action::Attack => attack,
+            Action::Burn => burn,
             Action::Cry => cry,
             Action::Skip => skip,
             Action::UseItem => use_item,
@@ -29,6 +31,7 @@ impl fmt::Display for Action {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let display_name = match *self {
             Action::Attack => "Attack".to_string(),
+            Action::Burn => "Burn".to_string(),
             Action::Cry => "Cry".to_string(),
             Action::Skip => "Skip".to_string(),
             Action::UseItem => "Use Item".to_string(),
@@ -54,6 +57,24 @@ fn attack(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
             combatants[caster].physical_attack - combatants[*target].physical_resistance
         );
     };
+}
+
+fn burn(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
+    for target in targets {
+        let temp: u32 = combatants[*target].hp;
+        
+        combatants[*target].hp -= std::cmp::min(
+                combatants[*target].flammability, 
+                combatants[*target].hp
+        );
+
+        println! (
+            "{} burnt the shit out of {} for {} damage!",
+            combatants[caster],
+            combatants[*target],
+            temp - combatants[*target].hp,
+        );
+    }
 }
 
 fn cry(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
