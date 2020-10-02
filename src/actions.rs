@@ -56,6 +56,7 @@ fn attack(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
             combatants[*target],
             combatants[caster].physical_attack - combatants[*target].physical_resistance
         );
+
     };
 }
 
@@ -68,11 +69,18 @@ fn burn(combatants: &mut [&mut Combatant], targets: &[usize], caster: usize) {
                 combatants[*target].hp
         );
 
+        combatants[*target].damage_over_time += 1;
+
         println! (
             "{} burnt the shit out of {} for {} damage!",
             combatants[caster],
             combatants[*target],
             temp - combatants[*target].hp,
+        );
+        println! (
+            "{} took {} burn damage from previous wounds!",
+            combatants[*target],
+            combatants[*target].damage_over_time,
         );
     }
 }
