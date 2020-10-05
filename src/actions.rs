@@ -112,7 +112,7 @@ fn miso_attack(combatants: &mut [&mut Combatant], targets: &[usize], caster: usi
     for target in targets {
         match combatants[*target].gender {
             Gender::Male => {
-                combatants[*target].hp -= std::cmp::min(
+                let damage = std::cmp::min(
                     combatants[caster].physical_attack / 2 - std::cmp::min(
                         combatants[*target].physical_resistance,
                         combatants[caster].physical_attack / 2
@@ -120,11 +120,13 @@ fn miso_attack(combatants: &mut [&mut Combatant], targets: &[usize], caster: usi
                     combatants[*target].hp
                 );
 
-                println! (
+                combatants[*target].hp -= damage;
+
+                println!(
                     "{} saw that {} was a man and overestimated him, hitting for {} damage",
                     combatants[caster],
                     combatants[*target],
-                    combatants[caster].physical_attack / 2 - combatants[*target].physical_resistance,
+                    damage,
                 );
             },
             _ => {
