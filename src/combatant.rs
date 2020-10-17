@@ -15,7 +15,7 @@ pub enum Gender {
 
 #[derive(Clone, Copy, Debug)]
 pub enum Stat {
-    Agility = 0,
+    Agility,
     FireAttack,
     FireResistance,
     PhysicalAttack,
@@ -50,27 +50,27 @@ impl<'a> Combatant<'a> {
     }
 
     pub fn get_stat(&self, stat: Stat) -> u32 {
-        let mut stat = self.stats[stat as usize];
+        let mut value = self.stats[stat as usize];
 
         for modifier in &self.stat_modifiers[stat as usize] {
             match modifier {
-                Modifier::Add(value) => stat += value, // TODO: overflow checking
-                Modifier::Divide(value) => stat /= value, // TODO: overflow checking
-                Modifier::Multiply(value) => stat *= value, // TODO: overflow checking
-                Modifier::Subtract(value) => stat -= value, // TODO: overflow checking
+                Modifier::Add(x) => value += x, // TODO: overflow checking
+                Modifier::Divide(x) => value /= x, // TODO: overflow checking
+                Modifier::Multiply(x) => value *= x, // TODO: overflow checking
+                Modifier::Subtract(x) => value -= x, // TODO: overflow checking
             }
         };
 
         for (modifier, _) in &self.active_stat_modifiers[stat as usize] {
             match modifier {
-                Modifier::Add(value) => stat += value, // TODO: overflow checking
-                Modifier::Divide(value) => stat /= value, // TODO: overflow checking
-                Modifier::Multiply(value) => stat *= value, // TODO: overflow checking
-                Modifier::Subtract(value) => stat -= value, // TODO: overflow checking
+                Modifier::Add(x) => value += x, // TODO: overflow checking
+                Modifier::Divide(x) => value /= x, // TODO: overflow checking
+                Modifier::Multiply(x) => value *= x, // TODO: overflow checking
+                Modifier::Subtract(x) => value -= x, // TODO: overflow checking
             }
         }
 
-        stat
+        value
     }
 
     pub fn get_stat_raw(&self, stat: Stat) -> u32 {

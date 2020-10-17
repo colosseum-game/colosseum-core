@@ -11,7 +11,7 @@ use crate::{
 };
 
 #[allow(dead_code)]
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum EffectSource<'a> {
     None,
     Other(&'a Combatant<'a>),
