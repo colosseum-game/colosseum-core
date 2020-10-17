@@ -19,15 +19,15 @@ pub enum TargetFlag {
 
 #[derive(Debug)]
 pub struct SubAction<'a> {
-    effects: &'a [Effect],
-    target_flags: &'a [&'a [TargetFlag]],
-    target_count: u32,
+    pub effects: &'a [Effect],
+    pub target_flags: &'a [&'a [TargetFlag]],
+    pub target_count: u32,
 }
 
 #[derive(Debug)]
 pub struct Action<'a> {
-    display_name: &'a str,
-    sub_actions: &'a [SubAction<'a>],
+    pub display_name: &'a str,
+    pub sub_actions: &'a [SubAction<'a>],
 }
 
 impl<'a> fmt::Display for Action<'a> {
