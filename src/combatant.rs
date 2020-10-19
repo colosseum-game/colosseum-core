@@ -1,9 +1,6 @@
 use crate::{
     actions::Action,
-    damage::{
-        DamagePerTurn,
-        DamageType,
-    },
+    damage::DamagePerTurn,
     modifiers::{
         ModifierType,
         Modifier,
@@ -22,10 +19,14 @@ pub enum Gender {
 #[derive(Clone, Copy, Debug)]
 pub enum Stat {
     Agility,
+    FireAbsorbtion,
     FireAttack,
-    FireResistance,
+    FireDefense,
+    PhysicalAbsorbtion,
     PhysicalAttack,
-    PhysicalResistance,
+    PhysicalDefense,
+
+    MaxValue, // TODO: maybe find a better way to do this?
 }
 
 #[derive(Debug)]
@@ -38,17 +39,8 @@ pub struct Combatant<'a> {
     pub hp_max: u32,
     pub damage_per_turn: Vec<DamagePerTurn>,
 
-    pub agility: u32,
-    pub fire_attack: u32,
-    pub fire_resistance: u32,
-    pub physical_attack: u32,
-    pub physical_resistance: u32,
-
-    pub agility_modifiers: Vec<Modifier>,
-    pub fire_attack_modifiers: Vec<Modifier>,
-    pub fire_resistance_modifiers: Vec<Modifier>,
-    pub physical_attack_modifiers: Vec<Modifier>,
-    pub physical_resistance_modifiers: Vec<Modifier>,
+    pub stats: [u32; Stat::MaxValue as usize],
+    pub stat_modifiers: [Vec<Modifier>; Stat::MaxValue as usize],
 }
 
 impl<'a> Combatant<'a> {
@@ -61,13 +53,7 @@ impl<'a> Combatant<'a> {
     }
 
     pub fn get_stat(&self, stat: Stat) -> u32 {
-        let (mut stat_value, modifiers) = match stat {
-            Stat::Agility => (self.agility, &self.agility_modifiers),
-            Stat::FireAttack => (self.fire_attack, &self.fire_attack_modifiers),
-            Stat::FireResistance => (self.fire_resistance, &self.fire_attack_modifiers),
-            Stat::PhysicalAttack => (self.physical_attack, &self.physical_attack_modifiers),
-            Stat::PhysicalResistance => (self.physical_resistance, &self.fire_resistance_modifiers),
-        };
+        let (mut stat_value, modifiers) = (self.stats[stat as usize], &self.stat_modifiers[stat as usize]);
 
         for modifier in modifiers {
             match modifier.modifier_type {
@@ -82,23 +68,7 @@ impl<'a> Combatant<'a> {
     }
 
     pub fn get_stat_raw(&self, stat: Stat) -> u32 {
-        match stat {
-            Stat::Agility => self.agility,
-            Stat::FireAttack => self.fire_attack,
-            Stat::FireResistance => self.fire_resistance,
-            Stat::PhysicalAttack => self.physical_attack,
-            Stat::PhysicalResistance => self.physical_resistance,
-        }
-    }
-
-    pub fn get_stat_modifiers(&self, stat: Stat) -> &Vec<Modifier> {
-        match stat {
-            Stat::Agility => &self.agility_modifiers,
-            Stat::FireAttack => &self.fire_attack_modifiers,
-            Stat::FireResistance => &self.fire_resistance_modifiers,
-            Stat::PhysicalAttack => &self.physical_attack_modifiers,
-            Stat::PhysicalResistance => &self.physical_resistance_modifiers,
-        }
+        self.stats[stat as usize]
     }
 }
 
