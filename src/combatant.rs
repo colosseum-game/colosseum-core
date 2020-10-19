@@ -1,6 +1,9 @@
 use crate::{
     actions::Action,
-    damage::DamageType,
+    damage::{
+        DamagePerTurn,
+        DamageType,
+    },
     modifiers::{
         ModifierType,
         Modifier,
@@ -33,7 +36,7 @@ pub struct Combatant<'a> {
 
     pub hp: u32,
     pub hp_max: u32,
-    pub damage_per_turn: Vec<((DamageType, u32), u32)>,
+    pub damage_per_turn: Vec<DamagePerTurn>,
 
     pub agility: u32,
     pub fire_attack: u32,

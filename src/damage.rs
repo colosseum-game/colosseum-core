@@ -46,3 +46,10 @@ impl DamageType {
         0
     }
 }
+
+#[derive(Clone, Copy, Debug)]
+pub struct DamagePerTurn {
+    pub damage_type: DamageType,
+    pub value: u32,
+    pub turns_to_live: u32,
+}
