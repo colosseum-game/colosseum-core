@@ -70,6 +70,11 @@ impl<'a> Combatant<'a> {
     pub fn get_stat_raw(&self, stat: Stat) -> u32 {
         self.stats[stat as usize]
     }
+
+    pub fn with_stat(&mut self, stat: Stat, value: u32) -> &mut Self {
+        self.stats[stat as usize] = value; 
+        self
+    }
 }
 
 impl<'a> fmt::Display for Combatant<'a> {
