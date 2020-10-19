@@ -1,11 +1,12 @@
 use crate::{
     combatant::{
+        Combatant,
         Gender,
-        Stat,
     },
-    damage::DamageType,
-    effects::Effect,
-    modifiers::Modifier,
+    effects::{
+        Effect,
+        EffectSource,
+    },
 };
 
 use std::fmt;
@@ -14,7 +15,17 @@ use std::fmt;
 pub enum TargetFlag {
     Any,
     Gender(Gender),
-    Source,
+    Origin,
+}
+
+impl TargetFlag {
+    pub fn satisfied(&self, target: &Combatant, source: EffectSource) -> bool {
+        match *self {
+            TargetFlag::Any => true,
+            TargetFlag::Gender(gender) => target.gender == gender,
+            TargetFlag::Origin => match source { EffectSource::Origin => true, _ => false }
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -35,41 +46,3 @@ impl<'a> fmt::Display for Action<'a> {
         write!(f, "{}", self.display_name)
     }
 }
-
-pub const ATTACK: Action = Action {
-    display_name: "Attack",
-    sub_actions: &[
-        SubAction {
-            effects: &[
-                Effect::Damage(DamageType::Physical, 1, 1),
-            ],
-            target_flags: &[&[TargetFlag::Any]],
-            target_count: 1,
-        },
-    ],
-};
-
-pub const BEAT_FEMALE: Action = Action {
-    display_name: "Beat female",
-    sub_actions: &[
-        SubAction {
-            effects: &[
-                Effect::Damage(DamageType::Physical, 1, 1),
-            ],
-            target_flags: &[&[TargetFlag::Gender(Gender::Female)]],
-            target_count: 1,
-        },
-        SubAction {
-            effects: &[
-                Effect::ActiveModifier(Modifier::Subtract(5), Stat::PhysicalAttack, 1),
-            ],
-            target_flags: &[&[TargetFlag::Source]],
-            target_count: 1,
-        },
-    ],
-};
-
-pub const SKIP: Action = Action {
-    display_name: "Skip",
-    sub_actions: &[],
-};

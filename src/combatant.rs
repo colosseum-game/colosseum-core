@@ -1,12 +1,15 @@
 use crate::{
     actions::Action,
-    damage::ActiveDamage,
-    modifiers::Modifier,
+    damage::DamageType,
+    modifiers::{
+        ModifierType,
+        Modifier,
+    },
 };
 
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Gender {
     Female,
     Male,
@@ -20,84 +23,32 @@ pub enum Stat {
     FireResistance,
     PhysicalAttack,
     PhysicalResistance,
-
-    StatMax,
 }
 
 #[derive(Debug)]
 pub struct Combatant<'a> {
-    pub name: String,
+    pub name: &'a str,
     pub gender: Gender,
-
-    pub actions: Vec<&'a Action<'a>>,
+    pub actions: &'a [&'a Action<'a>],
 
     pub hp: u32,
     pub hp_max: u32,
-    pub active_damage: Vec<(ActiveDamage, u32)>,
+    pub damage_per_turn: Vec<((DamageType, u32), u32)>,
 
-    pub stats: [u32; Stat::StatMax as usize],
-    pub stat_modifiers: [Vec<Modifier>; Stat::StatMax as usize],
-    pub active_stat_modifiers: [Vec<(Modifier, u32)>; Stat::StatMax as usize],
+    pub agility: u32,
+    pub fire_attack: u32,
+    pub fire_resistance: u32,
+    pub physical_attack: u32,
+    pub physical_resistance: u32,
+
+    pub agility_modifiers: Vec<Modifier>,
+    pub fire_attack_modifiers: Vec<Modifier>,
+    pub fire_resistance_modifiers: Vec<Modifier>,
+    pub physical_attack_modifiers: Vec<Modifier>,
+    pub physical_resistance_modifiers: Vec<Modifier>,
 }
 
 impl<'a> Combatant<'a> {
-    pub fn new() -> Self {
-        Combatant {
-            name: "Unknown".to_string(),
-            gender: Gender::Male,
-            actions: vec![],
-            hp: 0,
-            hp_max: 0,
-            active_damage: vec![],
-            stats: [ 1, 0, 0, 1, 0 ],
-            stat_modifiers: [ vec![], vec![], vec![], vec![], vec![] ],
-            active_stat_modifiers: [ vec![], vec![], vec![], vec![], vec![] ],
-        }
-    }
-
-    pub fn with_name(mut self, name: String) -> Self {
-        self.name = name;
-        self
-    }
-
-    pub fn with_gender(mut self, gender: Gender) -> Self {
-        self.gender = gender;
-        self
-    }
-
-    pub fn with_actions(mut self, actions: &[&'a Action]) -> Self {
-        for action in actions {
-            self.actions.push(action);
-        }
-        self
-    }
-
-    pub fn with_hp(mut self, hp: u32, hp_max: u32) -> Self {
-        self.hp = std::cmp::min(hp, hp_max);
-        self.hp_max = hp_max;
-        self
-    }
-
-    pub fn with_active_damage(mut self, active_damage: ActiveDamage, turns_to_live: u32) -> Self {
-        self.active_damage.push((active_damage, turns_to_live));
-        self
-    }
-
-    pub fn with_stat(mut self, stat: Stat, value: u32) -> Self {
-        self.stats[stat as usize] = value;
-        self
-    }
-
-    pub fn with_stat_modifier(mut self, stat: Stat, modifier: Modifier) -> Self {
-        self.stat_modifiers[stat as usize].push(modifier);
-        self
-    }
-
-    pub fn with_active_modifier(mut self, stat: Stat, modifier: Modifier, turns_to_live: u32) -> Self {
-        self.active_stat_modifiers[stat as usize].push((modifier, turns_to_live));
-        self
-    }
-
     pub fn alive(&self) -> bool {
         self.hp_max > 0 && self.hp > 0
     }
@@ -107,31 +58,44 @@ impl<'a> Combatant<'a> {
     }
 
     pub fn get_stat(&self, stat: Stat) -> u32 {
-        let mut value = self.stats[stat as usize];
+        let (mut stat_value, modifiers) = match stat {
+            Stat::Agility => (self.agility, &self.agility_modifiers),
+            Stat::FireAttack => (self.fire_attack, &self.fire_attack_modifiers),
+            Stat::FireResistance => (self.fire_resistance, &self.fire_attack_modifiers),
+            Stat::PhysicalAttack => (self.physical_attack, &self.physical_attack_modifiers),
+            Stat::PhysicalResistance => (self.physical_resistance, &self.fire_resistance_modifiers),
+        };
 
-        for modifier in &self.stat_modifiers[stat as usize] {
-            match modifier {
-                Modifier::Add(x) => value += x, // TODO: overflow checking
-                Modifier::Divide(x) => value /= x, // TODO: overflow checking
-                Modifier::Multiply(x) => value *= x, // TODO: overflow checking
-                Modifier::Subtract(x) => value -= x, // TODO: overflow checking
+        for modifier in modifiers {
+            match modifier.modifier_type {
+                ModifierType::Add => stat_value += modifier.value, // TODO: overflow checking
+                ModifierType::Divide => stat_value /= modifier.value, // TODO: overflow checking
+                ModifierType::Multiply => stat_value *= modifier.value, // TODO: overflow checking
+                ModifierType::Subtract => stat_value -= modifier.value, // TODO: overflow checking
             }
         };
 
-        for (modifier, _) in &self.active_stat_modifiers[stat as usize] {
-            match modifier {
-                Modifier::Add(x) => value += x, // TODO: overflow checking
-                Modifier::Divide(x) => value /= x, // TODO: overflow checking
-                Modifier::Multiply(x) => value *= x, // TODO: overflow checking
-                Modifier::Subtract(x) => value -= x, // TODO: overflow checking
-            }
-        }
-
-        value
+        stat_value
     }
 
     pub fn get_stat_raw(&self, stat: Stat) -> u32 {
-        self.stats[stat as usize]
+        match stat {
+            Stat::Agility => self.agility,
+            Stat::FireAttack => self.fire_attack,
+            Stat::FireResistance => self.fire_resistance,
+            Stat::PhysicalAttack => self.physical_attack,
+            Stat::PhysicalResistance => self.physical_resistance,
+        }
+    }
+
+    pub fn get_stat_modifiers(&self, stat: Stat) -> &Vec<Modifier> {
+        match stat {
+            Stat::Agility => &self.agility_modifiers,
+            Stat::FireAttack => &self.fire_attack_modifiers,
+            Stat::FireResistance => &self.fire_resistance_modifiers,
+            Stat::PhysicalAttack => &self.physical_attack_modifiers,
+            Stat::PhysicalResistance => &self.physical_resistance_modifiers,
+        }
     }
 }
 

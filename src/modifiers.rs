@@ -1,7 +1,14 @@
 #[derive(Clone, Copy, Debug)]
-pub enum Modifier {
-    Add(u32),
-    Divide(u32),
-    Multiply(u32),
-    Subtract(u32),
+pub enum ModifierType {
+    Add,
+    Divide,
+    Multiply,
+    Subtract,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct Modifier {
+    pub modifier_type: ModifierType,
+    pub value: u32,
+    pub turns_to_live: Option<u32>,
 }

@@ -18,8 +18,8 @@ impl DamageType {
             DamageType::Fire => {
                 let fire_damage = match source {
                     EffectSource::None => 1,
+                    EffectSource::Origin => target.get_stat(Stat::FireAttack),
                     EffectSource::Other(source) => source.get_stat(Stat::FireAttack),
-                    EffectSource::Target => target.get_stat(Stat::FireAttack),
                 } * multiplier / divisor;
     
                 let fire_resistance = target.get_stat(Stat::FireResistance);
@@ -30,8 +30,8 @@ impl DamageType {
             DamageType::Physical => {
                 let physical_damage = match source {
                     EffectSource::None => 1,
+                    EffectSource::Origin => target.get_stat(Stat::PhysicalAttack),
                     EffectSource::Other(source) => source.get_stat(Stat::PhysicalAttack),
-                    EffectSource::Target => target.get_stat(Stat::PhysicalAttack),
                 } * multiplier / divisor;
     
                 let physical_resistance = target.get_stat(Stat::PhysicalResistance);
@@ -45,10 +45,4 @@ impl DamageType {
     pub fn damage_reduction_from_target(&self, target: &Combatant) -> u32 {
         0
     }
-}
-
-#[derive(Debug)]
-pub struct ActiveDamage {
-    pub damage_type: DamageType,
-    pub value: u32,
 }
