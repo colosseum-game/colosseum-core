@@ -1,9 +1,10 @@
 use crate::{
     actions::Action,
-    damage::DamagePerTurn,
+    damage::StatusEffectEntry,
+    math::Fraction,
     modifiers::{
-        ModifierType,
         Modifier,
+        ModifierExpression,
     },
 };
 
@@ -37,10 +38,10 @@ pub struct Combatant<'a> {
 
     pub hp: u32,
     pub hp_max: u32,
-    pub damage_per_turn: Vec<DamagePerTurn>,
-
     pub stats: [u32; Stat::MaxValue as usize],
-    pub stat_modifiers: [Vec<Modifier>; Stat::MaxValue as usize],
+
+    pub status_effects: Vec<StatusEffectEntry>,
+    pub modifiers: [Vec<Modifier>; Stat::MaxValue as usize],
 }
 
 impl<'a> Combatant<'a> {
@@ -53,27 +54,25 @@ impl<'a> Combatant<'a> {
     }
 
     pub fn get_stat(&self, stat: Stat) -> u32 {
-        let (mut stat_value, modifiers) = (self.stats[stat as usize], &self.stat_modifiers[stat as usize]);
-
-        for modifier in modifiers {
-            match modifier.modifier_type {
-                ModifierType::Add => stat_value += modifier.value, // TODO: overflow checking
-                ModifierType::Divide => stat_value /= modifier.value, // TODO: overflow checking
-                ModifierType::Multiply => stat_value *= modifier.value, // TODO: overflow checking
-                ModifierType::Subtract => stat_value -= modifier.value, // TODO: overflow checking
+        let (add, multiply, subtract) = self.modifiers[stat as usize].iter().fold((0, Fraction::one(), 0), |acc, modifier|
+            match modifier.expression {
+                ModifierExpression::Add(value) => (acc.0 + value, acc.1, acc.2),
+                ModifierExpression::Multiply(value) => (acc.0, acc.1.multiply(value), acc.2),
+                ModifierExpression::Subtract(value) => (acc.0, acc.1, acc.2 + value),
             }
-        };
+        );
 
-        stat_value
+        let mut value = self.stats[stat as usize];
+        value += add;
+        value -= std::cmp::min(value, subtract);
+        value *= multiply.numerator;
+        value /= multiply.denominator;
+
+        value
     }
 
     pub fn get_stat_raw(&self, stat: Stat) -> u32 {
         self.stats[stat as usize]
-    }
-
-    pub fn with_stat(&mut self, stat: Stat, value: u32) -> &mut Self {
-        self.stats[stat as usize] = value; 
-        self
     }
 }
 

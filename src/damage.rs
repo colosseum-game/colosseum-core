@@ -1,20 +1,30 @@
 use crate::{
-    combatant::{
-        Combatant,
-        Stat,
-    },
-    effects::EffectSource,
+    lifetime::Lifetime,
+    math::Fraction,
 };
 
 #[derive(Clone, Copy, Debug)]
-pub enum DamageType {
+pub enum DamageAspect {
     Fire,
     Physical,
 }
 
 #[derive(Clone, Copy, Debug)]
-pub struct DamagePerTurn {
-    pub damage_type: DamageType,
+pub struct Damage {
+    pub aspect: DamageAspect,
+    pub scaling: Fraction,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct StatusEffect {
+    pub aspect: DamageAspect,
+    pub scaling: Fraction,
+    pub lifetime: Lifetime,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct StatusEffectEntry {
+    pub aspect: DamageAspect,
     pub value: u32,
-    pub turns_to_live: u32,
+    pub lifetime: Lifetime,
 }

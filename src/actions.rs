@@ -29,10 +29,17 @@ impl TargetFlag {
 }
 
 #[derive(Debug)]
+pub enum TargetingScheme {
+    All,
+    MultiTarget(u32),
+    SingleTarget,
+}
+
+#[derive(Debug)]
 pub struct SubAction<'a> {
     pub effects: &'a [Effect],
     pub target_flags: &'a [&'a [TargetFlag]],
-    pub target_count: u32,
+    pub targeting_scheme: TargetingScheme,
 }
 
 #[derive(Debug)]

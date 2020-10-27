@@ -1,14 +1,17 @@
+use crate::{
+    lifetime::Lifetime,
+    math::Fraction,
+};
+
 #[derive(Clone, Copy, Debug)]
-pub enum ModifierType {
-    Add,
-    Divide,
-    Multiply,
-    Subtract,
+pub enum ModifierExpression {
+    Add(u32),
+    Multiply(Fraction),
+    Subtract(u32),
 }
 
 #[derive(Clone, Copy, Debug)]
 pub struct Modifier {
-    pub modifier_type: ModifierType,
-    pub value: u32,
-    pub turns_to_live: Option<u32>,
+    pub expression: ModifierExpression,
+    pub lifetime: Lifetime,
 }

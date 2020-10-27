@@ -3,11 +3,13 @@ use crate::{
         Combatant,
         Stat,
     },
-    damage::DamageType,
+    damage::{
+        Damage,
+        StatusEffect,
+    },
     modifiers::Modifier,
 };
 
-#[allow(dead_code)]
 #[derive(Clone, Copy, Debug)]
 pub enum EffectSource<'a> {
     None,
@@ -17,6 +19,7 @@ pub enum EffectSource<'a> {
 
 #[derive(Debug)]
 pub enum Effect {
-    Damage(DamageType, u32, u32, Option<u32>),
+    Damage(Damage),
     Modifier(Modifier, Stat),
+    StatusEffect(StatusEffect),
 }
