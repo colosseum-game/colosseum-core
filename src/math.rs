@@ -1,44 +1,32 @@
 #[derive(Clone, Copy, Debug)]
-pub struct Fraction {
-    pub numerator: u32,
-    pub denominator: u32,
-}
+pub struct Fraction(pub u32, pub u32);
 
 impl Fraction {
     pub fn add(&self, other: Fraction) -> Fraction {
-        Fraction {
-            numerator: self.numerator * other.denominator + other.numerator * self.denominator,
-            denominator: self.denominator * other.denominator
-        }.reduce()
+        Fraction(
+            self.0 * other.1 + other.0 * self.1,
+            self.1 * other.1
+        ).reduce()
     }
 
     pub fn multiply(&self, other: Fraction) -> Fraction {
-        Fraction {
-            numerator: self.numerator * other.numerator,
-            denominator: self.denominator * other.denominator,
-        }.reduce()
-    }
-
-    pub fn new(numerator: u32, denominator: u32) -> Fraction {
-        Fraction {
-            numerator,
-            denominator,
-        }
+        Fraction(
+            self.0 * other.0,
+            self.1 * other.1,
+        ).reduce()
     }
 
     pub fn one() -> Fraction {
-        Fraction {
-            numerator: 1,
-            denominator: 1
-        }
+        Fraction(1, 1)
     }
 
     pub fn reduce(&self) -> Fraction {
-        let gcd = gcd(self.numerator, self.denominator);
-        Fraction {
-            numerator: self.numerator / gcd,
-            denominator: self.denominator / gcd
-        }
+        let gcd = gcd(self.0, self.1);
+        
+        Fraction(
+            self.0 / gcd,
+            self.1 / gcd
+        )
     }
 }
 

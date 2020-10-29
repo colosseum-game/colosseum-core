@@ -1,5 +1,5 @@
 use crate::{
-    actions::Action,
+    actions::ActionIdentifier,
     damage::StatusEffectEntry,
     math::Fraction,
     modifiers::{
@@ -30,11 +30,11 @@ pub enum Stat {
     MaxValue, // TODO: maybe find a better way to do this?
 }
 
-#[derive(Debug)]
-pub struct Combatant<'a> {
-    pub name: &'a str,
+#[derive(Clone, Debug)]
+pub struct Combatant {
+    pub name: String,
     pub gender: Gender,
-    pub actions: &'a [&'a Action<'a>],
+    pub actions: Vec<ActionIdentifier>,
 
     pub hp: u32,
     pub hp_max: u32,
@@ -44,7 +44,7 @@ pub struct Combatant<'a> {
     pub modifiers: [Vec<Modifier>; Stat::MaxValue as usize],
 }
 
-impl<'a> Combatant<'a> {
+impl Combatant {
     pub fn alive(&self) -> bool {
         self.hp_max > 0 && self.hp > 0
     }
@@ -65,8 +65,8 @@ impl<'a> Combatant<'a> {
         let mut value = self.stats[stat as usize];
         value += add;
         value -= std::cmp::min(value, subtract);
-        value *= multiply.numerator;
-        value /= multiply.denominator;
+        value *= multiply.0;
+        value /= multiply.1;
 
         value
     }
@@ -76,7 +76,7 @@ impl<'a> Combatant<'a> {
     }
 }
 
-impl<'a> fmt::Display for Combatant<'a> {
+impl fmt::Display for Combatant {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.name)
     }

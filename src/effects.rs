@@ -14,7 +14,7 @@ use crate::{
 pub enum EffectSource<'a> {
     None,
     Origin,
-    Other(&'a Combatant<'a>),
+    Other(&'a Combatant),
 }
 
 #[derive(Debug)]
