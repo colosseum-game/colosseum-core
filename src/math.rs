@@ -1,4 +1,9 @@
-#[derive(Clone, Copy, Debug)]
+use serde::{
+    Deserialize,
+    Serialize,
+};
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub struct Fraction(pub u32, pub u32);
 
 impl Fraction {

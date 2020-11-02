@@ -16,6 +16,11 @@ use crate::{
     math::Fraction,
 };
 
+use serde::{
+    Deserialize,
+    Serialize,
+};
+
 use std::fmt;
 
 #[derive(Debug)]
@@ -73,7 +78,7 @@ impl<'a> fmt::Display for Action<'a> {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum ActionIdentifier {
     Attack,
     Scorch,

@@ -3,14 +3,19 @@ use crate::{
     math::Fraction,
 };
 
-#[derive(Clone, Copy, Debug)]
+use serde::{
+    Deserialize,
+    Serialize,
+};
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum ModifierExpression {
     Add(u32),
     Multiply(Fraction),
     Subtract(u32),
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub struct Modifier {
     pub expression: ModifierExpression,
     pub lifetime: Lifetime,
