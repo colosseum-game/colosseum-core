@@ -9,27 +9,29 @@ use serde::{
 };
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
-pub enum DamageAspect {
+pub enum Aspect {
     Fire,
+    Frost,
+    Lightning,
     Physical,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub struct Damage {
-    pub aspect: DamageAspect,
+    pub aspect: Aspect,
     pub scaling: Fraction,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub struct StatusEffect {
-    pub aspect: DamageAspect,
+    pub aspect: Aspect,
     pub scaling: Fraction,
     pub lifetime: Lifetime,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub struct StatusEffectEntry {
-    pub aspect: DamageAspect,
+    pub aspect: Aspect,
     pub value: u32,
     pub lifetime: Lifetime,
 }

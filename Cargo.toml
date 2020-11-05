@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 serde = { version = "1.0.117", features = ["derive"] }
+variant_count = "1.0.0"
