@@ -1,22 +1,20 @@
 use crate::{
-    actions::ActionIdentifier,
+    action::ActionIdentifier,
     damage::{
         Aspect,
         StatusEffectEntry,
     },
     item::equipable::{
-        BodyEquipable,
-        BodyEquipableIdentifier,
-        FeetEquipable,
-        FeetEquipableIdentifier,
-        HandsEquipable,
-        HandsEquipableIdentifier,
-        HeadEquipable,
-        HeadEquipableIdentifier,
-        LegsEquipable,
-        LegsEquipableIdentifier,
-        WaistEquipable,
-        WaistEquipableIdentifier,
+        Bodywear,
+        BodywearIdentifier,
+        Footwear,
+        FootwearIdentifier,
+        Handwear,
+        HandwearIdentifier,
+        Headwear,
+        HeadwearIdentifier,
+        Legwear,
+        LegwearIdentifier,
     },
     math::Fraction,
     modifier::{
@@ -37,6 +35,12 @@ pub enum Gender {
     None,
 }
 
+impl Default for Gender {
+    fn default() -> Self {
+        Gender::None
+    }
+}
+
 #[derive(Clone, Copy, Debug)]
 pub enum Attribute {
     Vigor,
@@ -48,7 +52,7 @@ pub enum Attribute {
     Mind,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Combatant {
     pub name: String,
     pub gender: Gender,
@@ -62,12 +66,11 @@ pub struct Combatant {
     pub intelligence: u32,
     pub mind: u32,
 
-    pub head_equipable: Option<HeadEquipableIdentifier>,
-    pub body_equipable: Option<BodyEquipableIdentifier>,
-    pub hands_equipable: Option<HandsEquipableIdentifier>,
-    pub waist_equipable: Option<WaistEquipableIdentifier>,
-    pub legs_equipable: Option<LegsEquipableIdentifier>,
-    pub feet_equipable: Option<FeetEquipableIdentifier>,
+    pub headwear: Option<HeadwearIdentifier>,
+    pub bodywear: Option<BodywearIdentifier>,
+    pub handwear: Option<HandwearIdentifier>,
+    pub legwear: Option<LegwearIdentifier>,
+    pub footwear: Option<FootwearIdentifier>,
 
     #[serde(skip)] hp: u32,
     #[serde(skip)] pub status_effects: Vec<StatusEffectEntry>,
@@ -153,12 +156,11 @@ impl Combatant {
 
     pub fn get_defense(&self, aspect: Aspect) -> u32 {
         let mut value = 0;
-        if let Some(identifier) = self.head_equipable { value += <&HeadEquipable>::from(identifier).get_defense(aspect); }
-        if let Some(identifier) = self.body_equipable { value += <&BodyEquipable>::from(identifier).get_defense(aspect); }
-        if let Some(identifier) = self.hands_equipable { value += <&HandsEquipable>::from(identifier).get_defense(aspect); }
-        if let Some(identifier) = self.waist_equipable { value += <&WaistEquipable>::from(identifier).get_defense(aspect); }
-        if let Some(identifier) = self.legs_equipable { value += <&LegsEquipable>::from(identifier).get_defense(aspect); }
-        if let Some(identifier) = self.feet_equipable { value += <&FeetEquipable>::from(identifier).get_defense(aspect); }
+        if let Some(identifier) = self.headwear { value += <&Headwear>::from(identifier).get_defense(aspect); }
+        if let Some(identifier) = self.bodywear { value += <&Bodywear>::from(identifier).get_defense(aspect); }
+        if let Some(identifier) = self.handwear { value += <&Handwear>::from(identifier).get_defense(aspect); }
+        if let Some(identifier) = self.legwear { value += <&Legwear>::from(identifier).get_defense(aspect); }
+        if let Some(identifier) = self.footwear { value += <&Footwear>::from(identifier).get_defense(aspect); }
         value
     }
 }

@@ -14,7 +14,10 @@ use crate::{
     math::Fraction,
 };
 
-use variant_count::VariantCount;
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Debug)]
 pub struct Consumable<'a> {
@@ -33,7 +36,7 @@ impl<'a> From<ConsumableIdentifier> for &Consumable<'a> {
     }
 }
 
-#[derive(Clone, Copy, Debug, VariantCount)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum ConsumableIdentifier {
     CrackedBellrootSeed,
     Grenade,

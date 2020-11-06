@@ -1,9 +1,10 @@
-pub mod actions;
+pub mod action;
 pub mod combatant;
 pub mod damage;
 pub mod effect;
 pub mod item;
 pub mod lifetime;
 pub mod math;
+pub mod message;
 pub mod modifier;
 pub mod party;

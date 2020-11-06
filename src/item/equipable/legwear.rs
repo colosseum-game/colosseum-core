@@ -5,7 +5,7 @@ use serde::{
     Serialize,
 };
 
-pub struct BodyEquipable<'a> {
+pub struct Legwear<'a> {
     pub display_name: &'a str,
     pub description: &'a str,
     pub fire_defense: u32,
@@ -14,7 +14,7 @@ pub struct BodyEquipable<'a> {
     pub physical_defense: u32,
 }
 
-impl<'a> BodyEquipable<'a> {
+impl<'a> Legwear<'a> {
     pub fn get_defense(&self, aspect: Aspect) -> u32 {
         match aspect {
             Aspect::Fire => self.fire_defense,
@@ -25,15 +25,24 @@ impl<'a> BodyEquipable<'a> {
     }
 }
 
-impl<'a> From<BodyEquipableIdentifier> for &BodyEquipable<'a> {
-    fn from(identifier: BodyEquipableIdentifier) -> Self {
+impl<'a> From<LegwearIdentifier> for &Legwear<'a> {
+    fn from(identifier: LegwearIdentifier) -> Self {
         match identifier {
-
+            LegwearIdentifier::BreakersHaremPants => &BREAKERS_HAREM_PANTS,
         }
     }
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
-pub enum BodyEquipableIdentifier {
-
+pub enum LegwearIdentifier {
+    BreakersHaremPants,
 }
+
+const BREAKERS_HAREM_PANTS: Legwear = Legwear {
+    display_name: "Breakers Harem Pants",
+    description: "",
+    fire_defense: 0,
+    frost_defense: 3,
+    lightning_defense: 1,
+    physical_defense: 1,
+};

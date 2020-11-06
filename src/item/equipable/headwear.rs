@@ -5,7 +5,7 @@ use serde::{
     Serialize,
 };
 
-pub struct HandsEquipable<'a> {
+pub struct Headwear<'a> {
     pub display_name: &'a str,
     pub description: &'a str,
     pub fire_defense: u32,
@@ -14,7 +14,7 @@ pub struct HandsEquipable<'a> {
     pub physical_defense: u32,
 }
 
-impl<'a> HandsEquipable<'a> {
+impl<'a> Headwear<'a> {
     pub fn get_defense(&self, aspect: Aspect) -> u32 {
         match aspect {
             Aspect::Fire => self.fire_defense,
@@ -25,8 +25,8 @@ impl<'a> HandsEquipable<'a> {
     }
 }
 
-impl<'a> From<HandsEquipableIdentifier> for &HandsEquipable<'a> {
-    fn from(identifier: HandsEquipableIdentifier) -> Self {
+impl<'a> From<HeadwearIdentifier> for &Headwear<'a> {
+    fn from(identifier: HeadwearIdentifier) -> Self {
         match identifier {
 
         }
@@ -34,6 +34,6 @@ impl<'a> From<HandsEquipableIdentifier> for &HandsEquipable<'a> {
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
-pub enum HandsEquipableIdentifier {
+pub enum HeadwearIdentifier {
 
 }

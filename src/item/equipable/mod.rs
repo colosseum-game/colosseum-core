@@ -1,45 +1,40 @@
-mod body_equipable;
-pub use body_equipable::{
-    BodyEquipable,
-    BodyEquipableIdentifier,
+mod bodywear;
+pub use bodywear::{
+    Bodywear,
+    BodywearIdentifier,
 };
 
-mod feet_equipable;
-pub use feet_equipable::{
-    FeetEquipable,
-    FeetEquipableIdentifier,
+mod footwear;
+pub use footwear::{
+    Footwear,
+    FootwearIdentifier,
 };
 
-mod hands_equipable;
-pub use hands_equipable::{
-    HandsEquipable,
-    HandsEquipableIdentifier,
+mod handwear;
+pub use handwear::{
+    Handwear,
+    HandwearIdentifier,
 };
 
-mod head_equipable;
-pub use head_equipable::{
-    HeadEquipable,
-    HeadEquipableIdentifier,
+mod headwear;
+pub use headwear::{
+    Headwear,
+    HeadwearIdentifier,
 };
 
-mod legs_equipable;
-pub use legs_equipable::{
-    LegsEquipable,
-    LegsEquipableIdentifier,
+mod legwear;
+pub use legwear::{
+    Legwear,
+    LegwearIdentifier,
 };
 
-mod waist_equipable;
-pub use waist_equipable::{
-    WaistEquipable,
-    WaistEquipableIdentifier,
-};
-
-#[derive(Debug)]
-pub enum EquipableIdentifier {
-    Head(HeadEquipableIdentifier),
-    Body(BodyEquipableIdentifier),
-    Hands(HandsEquipableIdentifier),
-    Waist(WaistEquipableIdentifier),
-    Legs(LegsEquipableIdentifier),
-    Feet(FeetEquipableIdentifier),
-}
+// TODO: reconsider this?
+//#[derive(Debug)]
+//pub enum EquipableIdentifier {
+//    Head(HeadEquipableIdentifier),
+//    Body(ChestpieceIdentifier),
+//    Hands(HandsEquipableIdentifier),
+//    Waist(WaistEquipableIdentifier),
+//    Legs(LegsEquipableIdentifier),
+//    Feet(FeetEquipableIdentifier),
+//}

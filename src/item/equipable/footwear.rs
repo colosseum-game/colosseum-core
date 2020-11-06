@@ -5,7 +5,7 @@ use serde::{
     Serialize,
 };
 
-pub struct FeetEquipable<'a> {
+pub struct Footwear<'a> {
     pub display_name: &'a str,
     pub description: &'a str,
     pub fire_defense: u32,
@@ -14,7 +14,7 @@ pub struct FeetEquipable<'a> {
     pub physical_defense: u32,
 }
 
-impl<'a> FeetEquipable<'a> {
+impl<'a> Footwear<'a> {
     pub fn get_defense(&self, aspect: Aspect) -> u32 {
         match aspect {
             Aspect::Fire => self.fire_defense,
@@ -25,20 +25,31 @@ impl<'a> FeetEquipable<'a> {
     }
 }
 
-impl<'a> From<FeetEquipableIdentifier> for &FeetEquipable<'a> {
-    fn from(identifier: FeetEquipableIdentifier) -> Self {
+impl<'a> From<FootwearIdentifier> for &Footwear<'a> {
+    fn from(identifier: FootwearIdentifier) -> Self {
         match identifier {
-            FeetEquipableIdentifier::PlainThighboots => &PLAIN_THIGHBOOTS,
+            FootwearIdentifier::BreakersSneakers => &BREAKERS_SNEAKERS,
+            FootwearIdentifier::PlainThighboots => &PLAIN_THIGHBOOTS,
         }
     }
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
-pub enum FeetEquipableIdentifier {
+pub enum FootwearIdentifier {
+    BreakersSneakers,
     PlainThighboots,
 }
 
-const PLAIN_THIGHBOOTS: FeetEquipable = FeetEquipable {
+const BREAKERS_SNEAKERS: Footwear = Footwear {
+    display_name: "Breakers Sneakers",
+    description: "Vintage sneakers with rubber soles.",
+    fire_defense: 1,
+    frost_defense: 2,
+    lightning_defense: 7,
+    physical_defense: 1,
+};
+
+const PLAIN_THIGHBOOTS: Footwear = Footwear {
     display_name: "Plain Thighboots",
     description: "",
     fire_defense: 1,
