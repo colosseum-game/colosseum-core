@@ -1,14 +1,16 @@
 use crate::{
+    aspects::Aspect,
     combatant::{
         Attribute,
         Combatant,
-        Gender,
     },
-    damage::{
-        Damage,
-        StatusEffect,
-    },
+    lifetimes::Lifetime,
     modifier::Modifier,
+    targeting::{
+        TargetFlag,
+        TargetingScheme,
+    },
+    fraction::Fraction,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -20,33 +22,9 @@ pub enum EffectSource<'a> {
 
 #[derive(Debug)]
 pub enum SubEffect {
-    Damage(Damage),
+    Damage { aspect: Aspect, scaling: Fraction },
     Modifier(Modifier, Attribute),
-    StatusEffect(StatusEffect),
-}
-
-#[derive(Debug)]
-pub enum TargetFlag {
-    Any,
-    Gender(Gender),
-    Origin,
-}
-
-impl TargetFlag {
-    pub fn satisfied(&self, target: &Combatant, source: EffectSource) -> bool {
-        match *self {
-            TargetFlag::Any => true,
-            TargetFlag::Gender(gender) => target.gender == gender,
-            TargetFlag::Origin => match source { EffectSource::Origin => true, _ => false }
-        }
-    }
-}
-
-#[derive(Debug)]
-pub enum TargetingScheme {
-    All,
-    MultiTarget(usize),
-    SingleTarget,
+    DamageOverTime { aspect: Aspect, scaling: Fraction, lifetime: Lifetime },
 }
 
 #[derive(Debug)]

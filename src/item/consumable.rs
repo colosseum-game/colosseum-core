@@ -1,17 +1,15 @@
 use crate::{
-    damage::{
-        Damage,
-        Aspect,
-        StatusEffect,
-    },
+    aspects::Aspect,
     effect::{
         Effect,
         SubEffect,
+    },
+    lifetimes::Lifetime,
+    targeting::{
         TargetFlag,
         TargetingScheme,
     },
-    lifetime::Lifetime,
-    math::Fraction,
+    fraction::Fraction,
 };
 
 use serde::{
@@ -24,7 +22,7 @@ pub struct Consumable<'a> {
     pub display_name: &'a str,
     pub description: &'a str,
     pub max_count: u32,
-    pub effects: &'a [Effect<'a>],
+    pub use_effects: &'a [Effect<'a>],
 }
 
 impl<'a> From<ConsumableIdentifier> for &Consumable<'a> {
@@ -46,13 +44,13 @@ const CRACKED_BELLROOT_SEED: Consumable = Consumable {
     display_name: "Cracked Bellroot Seed",
     description: "",
     max_count: 3,
-    effects: &[
+    use_effects: &[
         Effect {
             sub_effects: &[
-                SubEffect::Damage(Damage {
+                SubEffect::Damage {
                     aspect: Aspect::Physical,
-                    scaling: Fraction(3, 1)
-                }),
+                    scaling: Fraction { numerator: 3, denominator: 1 },
+                },
             ],
             target_flags: &[&[TargetFlag::Any]],
             targeting_scheme: TargetingScheme::MultiTarget(3),
@@ -64,18 +62,18 @@ const GRENADE: Consumable = Consumable {
     display_name: "Grenade",
     description: "",
     max_count: 2,
-    effects: &[
+    use_effects: &[
         Effect {
             sub_effects: &[
-                SubEffect::Damage(Damage {
+                SubEffect::Damage {
                     aspect: Aspect::Physical,
-                    scaling: Fraction(12, 1),
-                }),
-                SubEffect::StatusEffect(StatusEffect {
+                    scaling: Fraction { numerator: 12, denominator: 1 },
+                },
+                SubEffect::DamageOverTime {
                     aspect: Aspect::Fire,
-                    scaling: Fraction(5, 2),
-                    lifetime: Lifetime::Active(3),
-                }),
+                    scaling: Fraction { numerator: 5, denominator: 2 },
+                    lifetime: Lifetime::Active { duration: 3 },
+                },
             ],
             target_flags: &[&[TargetFlag::Any]],
             targeting_scheme: TargetingScheme::SingleTarget,

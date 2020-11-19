@@ -1,4 +1,4 @@
-use crate::damage::Aspect;
+use crate::aspects::Aspect;
 
 use serde::{
     Deserialize,

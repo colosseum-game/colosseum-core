@@ -1,12 +1,10 @@
 use crate::{
-    action::ActionIdentifier,
-    damage::{
-        Aspect,
-        StatusEffectEntry,
-    },
-    item::equipable::{
+    ability::AbilityIdentifier,
+    aspects::Aspect,
+    item::{
         Bodywear,
         BodywearIdentifier,
+        EquipableIdentifier,
         Footwear,
         FootwearIdentifier,
         Handwear,
@@ -16,11 +14,12 @@ use crate::{
         Legwear,
         LegwearIdentifier,
     },
-    math::Fraction,
+    lifetimes::Lifetime,
     modifier::{
         Modifier,
         ModifierExpression,
     },
+    fraction::Fraction,
 };
 
 use serde::{
@@ -28,113 +27,103 @@ use serde::{
     Serialize,
 };
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub enum Attribute {
+    Agility,
+    Dexterity,
+    Intelligence,
+    Mind,
+    Strength,
+    Vigor,
+    Vitality,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub enum Gender {
     Female,
     Male,
     None,
 }
 
-impl Default for Gender {
-    fn default() -> Self {
-        Gender::None
-    }
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct DOT {
+    pub aspect: Aspect,
+    pub damage_value: u32,
+    pub lifetime: Lifetime,
 }
 
-#[derive(Clone, Copy, Debug)]
-pub enum Attribute {
-    Vigor,
-    Vitality,
-    Strength,
-    Agility,
-    Dexterity,
-    Intelligence,
-    Mind,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Combatant {
     pub name: String,
     pub gender: Gender,
-    pub actions: Vec<ActionIdentifier>,
+    pub abilities: Vec<AbilityIdentifier>,
 
-    pub vigor: u32,
-    pub vitality: u32,
     pub agility: u32,
-    pub strength: u32,
     pub dexterity: u32,
     pub intelligence: u32,
     pub mind: u32,
+    pub strength: u32,
+    pub vigor: u32,
+    pub vitality: u32,
 
-    pub headwear: Option<HeadwearIdentifier>,
+    pub agility_modifiers: Vec<Modifier>,
+    pub dexterity_modifiers: Vec<Modifier>,
+    pub intelligence_modifiers: Vec<Modifier>,
+    pub mind_modifiers: Vec<Modifier>,
+    pub strength_modifiers: Vec<Modifier>,
+    pub vigor_modifiers: Vec<Modifier>,
+    pub vitality_modifiers: Vec<Modifier>,
+
     pub bodywear: Option<BodywearIdentifier>,
-    pub handwear: Option<HandwearIdentifier>,
-    pub legwear: Option<LegwearIdentifier>,
+    pub equipable: Option<EquipableIdentifier>,
     pub footwear: Option<FootwearIdentifier>,
+    pub handwear: Option<HandwearIdentifier>,
+    pub headwear: Option<HeadwearIdentifier>,
+    pub legwear: Option<LegwearIdentifier>,
 
-    #[serde(skip)] hp: u32,
-    #[serde(skip)] pub status_effects: Vec<StatusEffectEntry>,
-
-    #[serde(skip)] pub vigor_modifiers: Vec<Modifier>,
-    #[serde(skip)] pub vitality_modifiers: Vec<Modifier>,
-    #[serde(skip)] pub agility_modifiers: Vec<Modifier>,
-    #[serde(skip)] pub strength_modifiers: Vec<Modifier>,
-    #[serde(skip)] pub dexterity_modifiers: Vec<Modifier>,
-    #[serde(skip)] pub intelligence_modifiers: Vec<Modifier>,
-    #[serde(skip)] pub mind_modifiers: Vec<Modifier>,
+    pub hp: u32,
+    pub fatigue: u32,
+    pub dots: Vec<DOT>,
 }
 
 impl Combatant {
-    pub fn get_hp(&self) -> u32 {
-        std::cmp::min(self.hp, self.get_hp_max())
-    }
-
-    pub fn get_hp_max(&self) -> u32 {
-        self.get_attribute(Attribute::Vigor) * 2
-    }
-
-    pub fn modify_hp(&mut self, modifier: Modifier) {
-        self.hp = self.get_hp();
-        match modifier.expression {
-            ModifierExpression::Add(value) => self.hp = std::cmp::min(self.hp + value, self.get_hp_max()),
-            ModifierExpression::Multiply(value) => {
-                self.hp *= value.0;
-                self.hp /= value.1;
-                self.hp = std::cmp::min(self.hp, self.get_hp_max());
-            }
-            ModifierExpression::Subtract(value) => self.hp -= std::cmp::min(value, self.hp),
-        }
+    pub fn hp_max(&self) -> u32 {
+        self.attribute(Attribute::Vigor)
     }
 
     pub fn alive(&self) -> bool {
-        self.vigor > 0 && self.get_hp() > 0
+        self.hp > 0 && self.hp_max() > 0
     }
 
     pub fn dead(&self) -> bool {
         !self.alive()
     }
 
-    pub fn get_attribute_raw(&self, attribute: Attribute) -> u32 {
+    pub fn ready(&self) -> bool {
+        self.alive() && self.fatigue == 0
+    }
+
+    pub fn attribute_raw(&self, attribute: Attribute) -> u32 {
         match attribute {
-            Attribute::Vigor => self.vigor,
-            Attribute::Vitality => self.vitality,
-            Attribute::Strength => self.strength,
             Attribute::Agility => self.agility,
             Attribute::Dexterity => self.dexterity,
             Attribute::Intelligence => self.intelligence,
             Attribute::Mind => self.mind,
+            Attribute::Strength => self.strength,
+            Attribute::Vigor => self.vigor,
+            Attribute::Vitality => self.vitality,
         }
     }
 
-    pub fn get_attribute(&self, attribute: Attribute) -> u32 {
+    pub fn attribute(&self, attribute: Attribute) -> u32 {
         let attribute_modifiers = match attribute {
-            Attribute::Vigor => &self.vigor_modifiers,
-            Attribute::Vitality => &self.vitality_modifiers,
-            Attribute::Strength => &self.strength_modifiers,
             Attribute::Agility => &self.agility_modifiers,
             Attribute::Dexterity => &self.dexterity_modifiers,
             Attribute::Intelligence => &self.intelligence_modifiers,
             Attribute::Mind => &self.mind_modifiers,
+            Attribute::Strength => &self.strength_modifiers,
+            Attribute::Vigor => &self.vigor_modifiers,
+            Attribute::Vitality => &self.vitality_modifiers,
         };
 
         let (add, multiply, subtract) = attribute_modifiers.iter().fold((0, Fraction::one(), 0), |acc, modifier|
@@ -145,22 +134,30 @@ impl Combatant {
             }
         );
 
-        let mut value = self.get_attribute_raw(attribute);
+        let mut value = self.attribute_raw(attribute);
         value += add;
         value -= std::cmp::min(value, subtract);
-        value *= multiply.0;
-        value /= multiply.1;
+        value *= multiply.numerator;
+        value /= multiply.denominator;
 
         value
     }
 
+    pub fn get_raw_damage(&self, aspect: Aspect) -> u32 {
+        1 // TODO: determine where to get damage values from
+    }
+
     pub fn get_defense(&self, aspect: Aspect) -> u32 {
         let mut value = 0;
-        if let Some(identifier) = self.headwear { value += <&Headwear>::from(identifier).get_defense(aspect); }
         if let Some(identifier) = self.bodywear { value += <&Bodywear>::from(identifier).get_defense(aspect); }
-        if let Some(identifier) = self.handwear { value += <&Handwear>::from(identifier).get_defense(aspect); }
-        if let Some(identifier) = self.legwear { value += <&Legwear>::from(identifier).get_defense(aspect); }
         if let Some(identifier) = self.footwear { value += <&Footwear>::from(identifier).get_defense(aspect); }
+        if let Some(identifier) = self.handwear { value += <&Handwear>::from(identifier).get_defense(aspect); }
+        if let Some(identifier) = self.headwear { value += <&Headwear>::from(identifier).get_defense(aspect); }
+        if let Some(identifier) = self.legwear { value += <&Legwear>::from(identifier).get_defense(aspect); }
         value
+    }
+
+    pub fn get_absorbtion(&self, aspect: Aspect) -> u32 {
+        0 // TODO: determine where to get absorbtion values from
     }
 }

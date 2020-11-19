@@ -1,8 +1,10 @@
 [package]
-name = "colosseum"
+name = "colosseum-core"
 version = "0.1.0"
 authors = ["Chay Nabors <chaynabors@gmail.com>"]
 edition = "2018"
+build = "build.rs"
 
 [dependencies]
+ncollide3d = "0.26.1"
 serde = { version = "1.0.117", features = ["derive"] }

@@ -1,11 +1,11 @@
-use crate::damage::Aspect;
+use crate::aspects::Aspect;
 
 use serde::{
     Deserialize,
     Serialize,
 };
 
-pub struct Bodywear<'a> {
+pub struct Legwear<'a> {
     pub display_name: &'a str,
     pub description: &'a str,
     pub fire_defense: u32,
@@ -14,7 +14,7 @@ pub struct Bodywear<'a> {
     pub physical_defense: u32,
 }
 
-impl<'a> Bodywear<'a> {
+impl<'a> Legwear<'a> {
     pub fn get_defense(&self, aspect: Aspect) -> u32 {
         match aspect {
             Aspect::Fire => self.fire_defense,
@@ -25,24 +25,24 @@ impl<'a> Bodywear<'a> {
     }
 }
 
-impl<'a> From<BodywearIdentifier> for &Bodywear<'a> {
-    fn from(identifier: BodywearIdentifier) -> Self {
+impl<'a> From<LegwearIdentifier> for &Legwear<'a> {
+    fn from(identifier: LegwearIdentifier) -> Self {
         match identifier {
-            BodywearIdentifier::BreakersHoodie => &BREAKERS_HOODIE
+            LegwearIdentifier::BreakersHaremPants => &BREAKERS_HAREM_PANTS,
         }
     }
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
-pub enum BodywearIdentifier {
-    BreakersHoodie,
+pub enum LegwearIdentifier {
+    BreakersHaremPants,
 }
 
-const BREAKERS_HOODIE: Bodywear = Bodywear {
-    display_name: "Breakers Hoodie",
+const BREAKERS_HAREM_PANTS: Legwear = Legwear {
+    display_name: "Breakers Harem Pants",
     description: "",
     fire_defense: 0,
-    frost_defense: 5,
+    frost_defense: 3,
     lightning_defense: 1,
-    physical_defense: 2,
+    physical_defense: 1,
 };
