@@ -1,6 +1,5 @@
 use crate::{
     combatant::Combatant,
-    item::ItemIdentifier,
 };
 
 use serde::{
@@ -8,10 +7,11 @@ use serde::{
     Serialize,
 };
 
-pub const INVENTORY_SIZE: usize = 32;
+pub const MEMBER_COUNT_MAX: usize = 4;
+pub const ITEM_COUNT_MAX: usize = 32;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Party {
-    pub members: Vec<Combatant>,
-    pub inventory: [Option<ItemIdentifier>; INVENTORY_SIZE],
+    pub members: [Option<Combatant>; MEMBER_COUNT_MAX],
+    pub inventory: [Option<String>; ITEM_COUNT_MAX],
 }

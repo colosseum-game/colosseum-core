@@ -1,16 +1,21 @@
 use crate::{
-    aspects::Aspect,
+    aspect::Aspect,
     combatant::{
         Attribute,
         Combatant,
     },
-    lifetimes::Lifetime,
+    lifetime::Lifetime,
     modifier::Modifier,
     targeting::{
         TargetFlag,
         TargetingScheme,
     },
     fraction::Fraction,
+};
+
+use serde::{
+    Deserialize,
+    Serialize,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -20,16 +25,16 @@ pub enum EffectSource<'a> {
     Other(&'a Combatant),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum SubEffect {
     Damage { aspect: Aspect, scaling: Fraction },
     Modifier(Modifier, Attribute),
     DamageOverTime { aspect: Aspect, scaling: Fraction, lifetime: Lifetime },
 }
 
-#[derive(Debug)]
-pub struct Effect<'a> {
-    pub sub_effects: &'a [SubEffect],
-    pub target_flags: &'a [&'a [TargetFlag]],
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Effect {
+    pub sub_effects: Vec<SubEffect>,
+    pub target_flags: Vec<Vec<TargetFlag>>,
     pub targeting_scheme: TargetingScheme,
 }

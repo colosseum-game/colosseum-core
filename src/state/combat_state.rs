@@ -1,6 +1,6 @@
 use crate::{
     actions::CombatAction,
-    ability::Ability,
+    skill::Skill,
     aspects::Aspect,
     combatant::{
         Attribute,
@@ -23,19 +23,21 @@ use serde::{
     Serialize,
 };
 
+pub const MAX_PARTY_COUNT: usize = 2;
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct CombatState {
-    pub parties: Vec<Party>,
+    pub parties: [Party; MAX_PARTY_COUNT],
 }
 
 impl CombatState {
-    pub fn transform(&mut self, action: CombatAction, source: Target) {
+    pub fn transform(&mut self, source: Target, action: CombatAction) {
         match action {
-            CombatAction::Ability { ability_index, target_groups } => {
-                let ability_identifier = self.parties[source.party_index].members[source.member_index].abilities[ability_index];
-                let ability = <&Ability>::from(ability_identifier);
+            CombatAction::Skill { skill_index, target_groups } => {
+                let skill_identifier = self.parties[source.party_index].members[source.member_index].skills[skill_index];
+                let skill = <&Skill>::from(skill_identifier);
 
-                for i in 0..ability.effects.len() {
+                for i in 0..skill.effects.len() {
                     for target in &target_groups[i] {
                         // getting the source and target from our collection is complicated here since we have to show rust that the source and target aren't the same thing
                         // we can only do this by iterating the collection, or by splitting the collection at a threshold between them
@@ -78,7 +80,7 @@ impl CombatState {
                         };
 
                         // apply every effect in the current sub_action
-                        for sub_effect in ability.effects[i].sub_effects {
+                        for sub_effect in skill.effects[i].sub_effects {
                             match sub_effect {
                                 SubEffect::Damage { aspect, scaling } => process_damage(target, *aspect, calculate_damage_value(target, source, *aspect, *scaling)),
                                 SubEffect::Modifier(modifier, attribute) => push_modifier(target, *modifier, *attribute),
@@ -122,42 +124,37 @@ impl CombatState {
             _ => (),
         }
 
-        {
-            let mut source = &mut self.parties[source.party_index].members[source.member_index];
+        let mut source = &mut self.parties[source.party_index].members[source.member_index];
 
-            // update dots
-            for dot_index in 0..source.dots.len() {
-                let dot = source.dots[dot_index];
-                process_damage(&mut source, dot.aspect, dot.damage_value);
-                if let Lifetime::Active { duration } = dot.lifetime {
-                    if duration > 0 {
-                        source.dots[dot_index].lifetime = Lifetime::Active { duration: duration - 1 };
-                    }
+        // update dots
+        for dot_index in 0..source.dots.len() {
+            let dot = source.dots[dot_index];
+            process_damage(&mut source, dot.aspect, dot.damage_value);
+            if let Lifetime::Active { duration } = dot.lifetime {
+                if duration > 0 {
+                    source.dots[dot_index].lifetime = Lifetime::Active { duration: duration - 1 };
                 }
             }
-            source.dots.retain(|dot| if let Lifetime::Active { duration } = dot.lifetime { duration > 0 } else { true });
-
-            // update modifiers
-            macro_rules! update_modifiers {
-                ($M:ident) => {{
-                    for modifier in &mut source.$M {
-                        if let Lifetime::Active { ref mut duration } = modifier.lifetime {
-                            *duration -= std::cmp::min(*duration, 1)
-                        }
-                    }
-
-                    source.$M.retain(|modifier| if let Lifetime::Active { duration } = modifier.lifetime { duration > 0 } else { true });
-                }};
-            }
-
-            update_modifiers!(agility_modifiers);
-            update_modifiers!(dexterity_modifiers);
-            update_modifiers!(intelligence_modifiers);
-            update_modifiers!(mind_modifiers);
-            update_modifiers!(strength_modifiers);
-            update_modifiers!(vigor_modifiers);
-            update_modifiers!(vitality_modifiers);
         }
+
+        // update modifiers
+        macro_rules! update_modifiers {
+            ($M:ident) => {{
+                for modifier in &mut source.$M {
+                    if let Lifetime::Active { ref mut duration } = modifier.lifetime {
+                        *duration -= std::cmp::min(*duration, 1)
+                    }
+                }
+            }};
+        }
+
+        update_modifiers!(agility_modifiers);
+        update_modifiers!(dexterity_modifiers);
+        update_modifiers!(intelligence_modifiers);
+        update_modifiers!(mind_modifiers);
+        update_modifiers!(strength_modifiers);
+        update_modifiers!(vigor_modifiers);
+        update_modifiers!(vitality_modifiers);
     }
 }
 

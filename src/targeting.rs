@@ -11,7 +11,7 @@ use serde::{
     Serialize,
 };
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum TargetFlag {
     Any,
     Gender(Gender),
@@ -28,7 +28,7 @@ impl TargetFlag {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum TargetingScheme {
     All,
     MultiTarget(usize),

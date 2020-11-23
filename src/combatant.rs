@@ -1,25 +1,18 @@
 use crate::{
-    ability::AbilityIdentifier,
-    aspects::Aspect,
-    item::{
-        Bodywear,
-        BodywearIdentifier,
-        EquipableIdentifier,
-        Footwear,
-        FootwearIdentifier,
-        Handwear,
-        HandwearIdentifier,
-        Headwear,
-        HeadwearIdentifier,
-        Legwear,
-        LegwearIdentifier,
-    },
-    lifetimes::Lifetime,
+    aspect::Aspect,
+    fraction::Fraction,
+    lifetime::Lifetime,
     modifier::{
         Modifier,
         ModifierExpression,
     },
-    fraction::Fraction,
+    store::{
+        get_bodywear,
+        get_footwear,
+        get_handwear,
+        get_headwear,
+        get_legwear,
+    },
 };
 
 use serde::{
@@ -52,11 +45,15 @@ pub struct DOT {
     pub lifetime: Lifetime,
 }
 
+pub const SKILL_COUNT_MAX: usize = 32;
+pub const MODIFIER_COUNT_MAX: usize = 32;
+pub const DOT_COUNT_MAX: usize = 32;
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Combatant {
     pub name: String,
     pub gender: Gender,
-    pub abilities: Vec<AbilityIdentifier>,
+    pub skills: [Option<String>; SKILL_COUNT_MAX],
 
     pub agility: u32,
     pub dexterity: u32,
@@ -66,29 +63,33 @@ pub struct Combatant {
     pub vigor: u32,
     pub vitality: u32,
 
-    pub agility_modifiers: Vec<Modifier>,
-    pub dexterity_modifiers: Vec<Modifier>,
-    pub intelligence_modifiers: Vec<Modifier>,
-    pub mind_modifiers: Vec<Modifier>,
-    pub strength_modifiers: Vec<Modifier>,
-    pub vigor_modifiers: Vec<Modifier>,
-    pub vitality_modifiers: Vec<Modifier>,
-
-    pub bodywear: Option<BodywearIdentifier>,
-    pub equipable: Option<EquipableIdentifier>,
-    pub footwear: Option<FootwearIdentifier>,
-    pub handwear: Option<HandwearIdentifier>,
-    pub headwear: Option<HeadwearIdentifier>,
-    pub legwear: Option<LegwearIdentifier>,
+    pub bodywear: Option<String>,
+    pub footwear: Option<String>,
+    pub handwear: Option<String>,
+    pub headwear: Option<String>,
+    pub legwear: Option<String>,
+    pub weapon: Option<String>,
 
     pub hp: u32,
     pub fatigue: u32,
-    pub dots: Vec<DOT>,
+    pub dots: [Option<DOT>; DOT_COUNT_MAX],
+
+    pub agility_modifiers: [Option<Modifier>; MODIFIER_COUNT_MAX],
+    pub dexterity_modifiers: [Option<Modifier>; MODIFIER_COUNT_MAX],
+    pub intelligence_modifiers: [Option<Modifier>; MODIFIER_COUNT_MAX],
+    pub mind_modifiers: [Option<Modifier>; MODIFIER_COUNT_MAX],
+    pub strength_modifiers: [Option<Modifier>; MODIFIER_COUNT_MAX],
+    pub vigor_modifiers: [Option<Modifier>; MODIFIER_COUNT_MAX],
+    pub vitality_modifiers: [Option<Modifier>; MODIFIER_COUNT_MAX],
 }
 
 impl Combatant {
     pub fn hp_max(&self) -> u32 {
         self.attribute(Attribute::Vigor)
+    }
+
+    pub fn hp_max_initial(vigor: u32) -> u32 {
+        vigor
     }
 
     pub fn alive(&self) -> bool {
@@ -127,10 +128,13 @@ impl Combatant {
         };
 
         let (add, multiply, subtract) = attribute_modifiers.iter().fold((0, Fraction::one(), 0), |acc, modifier|
-            match modifier.expression {
-                ModifierExpression::Add(value) => (acc.0 + value, acc.1, acc.2),
-                ModifierExpression::Multiply(value) => (acc.0, acc.1.multiply(value), acc.2),
-                ModifierExpression::Subtract(value) => (acc.0, acc.1, acc.2 + value),
+            match modifier {
+                None => (acc.0, acc.1, acc.2),
+                Some(modifier) => match modifier.expression {
+                    ModifierExpression::Add(value) => (acc.0 + value, acc.1, acc.2),
+                    ModifierExpression::Multiply(value) => (acc.0, acc.1.multiply(value), acc.2),
+                    ModifierExpression::Subtract(value) => (acc.0, acc.1, acc.2 + value),
+                }
             }
         );
 
@@ -143,21 +147,21 @@ impl Combatant {
         value
     }
 
-    pub fn get_raw_damage(&self, aspect: Aspect) -> u32 {
+    pub fn raw_damage(&self, _aspect: Aspect) -> u32 {
         1 // TODO: determine where to get damage values from
     }
 
-    pub fn get_defense(&self, aspect: Aspect) -> u32 {
+    pub fn defense(&self, aspect: Aspect) -> u32 {
         let mut value = 0;
-        if let Some(identifier) = self.bodywear { value += <&Bodywear>::from(identifier).get_defense(aspect); }
-        if let Some(identifier) = self.footwear { value += <&Footwear>::from(identifier).get_defense(aspect); }
-        if let Some(identifier) = self.handwear { value += <&Handwear>::from(identifier).get_defense(aspect); }
-        if let Some(identifier) = self.headwear { value += <&Headwear>::from(identifier).get_defense(aspect); }
-        if let Some(identifier) = self.legwear { value += <&Legwear>::from(identifier).get_defense(aspect); }
+        if let Some(identifier) = &self.bodywear { value += get_bodywear(identifier).unwrap().get_defense(aspect); }
+        if let Some(identifier) = &self.footwear { value += get_footwear(identifier).unwrap().get_defense(aspect); }
+        if let Some(identifier) = &self.handwear { value += get_handwear(identifier).unwrap().get_defense(aspect); }
+        if let Some(identifier) = &self.headwear { value += get_headwear(identifier).unwrap().get_defense(aspect); }
+        if let Some(identifier) = &self.legwear { value += get_legwear(identifier).unwrap().get_defense(aspect); }
         value
     }
 
-    pub fn get_absorbtion(&self, aspect: Aspect) -> u32 {
+    pub fn absorbtion(&self, _aspect: Aspect) -> u32 {
         0 // TODO: determine where to get absorbtion values from
     }
 }

@@ -1,6 +1,6 @@
 use crate::{
     fraction::Fraction,
-    lifetimes::Lifetime,
+    lifetime::Lifetime,
 };
 
 use serde::{
