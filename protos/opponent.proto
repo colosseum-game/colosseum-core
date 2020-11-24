@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "gender.proto";
+
+message Opponent {
+    string name = 1;
+    Gender gender = 2;
+
+    string bodywear = 3;
+    string footwear = 4;
+    string handwear = 5;
+    string headwear = 6;
+    string legwear = 7;
+    string weapon = 8;
+}

@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+import "combatant.proto";
+
+message Party {
+    repeated Combatant members = 1;
+    repeated string inventory = 2;
+}

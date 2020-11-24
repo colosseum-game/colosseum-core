@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+import "effect.proto";
+
+message Consumable {
+    string display_name = 1;
+    string description = 2;
+    uint32 max_count = 3;
+    Effect effect = 4;
+}

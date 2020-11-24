@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+import "aspect.proto";
+import "attribute.proto";
+import "fraction.proto";
+import "gender.proto";
+import "modifier.proto";
+
+message DamageEffect {
+    Aspect aspect = 1;
+    Fraction scaling = 2;
+}
+
+message DamageOverTimeEffect {
+    Aspect aspect = 1;
+    Fraction scaling = 2;
+    oneof lifetime {
+        uint32 lifetime_duration = 3;
+    }
+}
+
+message ModifierEffect {
+    Modifier modifier = 1;
+    Attribute attribute = 2;
+}
+
+message SubEffect {
+    oneof subeffect {
+        DamageEffect damage_effect = 1;
+        DamageOverTimeEffect dot_effect = 3;
+        ModifierEffect modifier_effect = 2;
+    }
+}
+
+message TargetFlag {
+    oneof target_flag {
+        bool any = 1;
+        Gender gender = 2;
+        bool origin = 3;
+    }
+}
+
+message TargetQuery {
+    repeated TargetFlag target_flags = 1;
+}
+
+message TargetingScheme {
+    oneof targeting_scheme {
+        bool all = 1;
+        uint32 multi_target = 2;
+        bool single_target = 3;
+    }
+}
+
+message Effect {
+    repeated SubEffect sub_effects = 1;
+    repeated TargetQuery target_queries = 2;
+    TargetingScheme targeting_scheme = 3;
+}

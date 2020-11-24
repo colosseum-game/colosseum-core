@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "fraction.proto";
+import "google/protobuf/wrappers.proto";
+
+message Modifier {
+    oneof expression {
+        uint32 add = 1;
+        uint32 subtract = 2;
+        Fraction multiply = 3;
+    }
+    oneof lifetime {
+        uint32 lifetime_duration = 4;
+    }
+}

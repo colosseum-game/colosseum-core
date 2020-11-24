@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+enum Aspect {
+    ASPECT_NONE = 0;
+    ASPECT_FIRE = 1;
+    ASPECT_FROST = 2;
+    ASPECT_LIGHTNING = 3;
+    ASPECT_PHYSICAL = 4;
+}
