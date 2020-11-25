@@ -77,9 +77,22 @@ mod tests {
     }
 
     #[test]
-    fn quick_wearable_check() {
-        let default = BODYWEAR_STORE.get("default");
-        let default2 = protobuf::json::parse_from_str(include_str!("../content/bodywear/default.json")).unwrap();
-        assert_eq!(default, Some(&default2));
+    fn check_defaults() {
+        macro_rules! check_default {
+            ($store: ident, $stored: ident) => {
+                let default = $store.get("default");
+                let default2: $stored = Default::default();
+                assert_eq!(default, Some(&default2));
+            };
+        }
+
+        check_default!(BODYWEAR_STORE, Bodywear);
+        check_default!(CONSUMABLE_STORE, Consumable);
+        check_default!(FOOTWEAR_STORE, Footwear);
+        check_default!(HANDWEAR_STORE, Handwear);
+        check_default!(HEADWEAR_STORE, Headwear);
+        check_default!(LEGWEAR_STORE, Legwear);
+        check_default!(SKILL_STORE, Skill);
+        check_default!(WEAPON_STORE, Weapon);
     }
 }
