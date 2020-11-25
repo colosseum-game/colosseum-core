@@ -7,6 +7,13 @@ use crate::{
     aspect::Aspect,
     attribute::Attribute,
     fraction::Fraction,
+    store::{
+        BODYWEAR_STORE,
+        FOOTWEAR_STORE,
+        HANDWEAR_STORE,
+        HEADWEAR_STORE,
+        LEGWEAR_STORE,
+    },
 };
 
 impl Combatant {
@@ -69,14 +76,13 @@ impl Combatant {
         !self.alive()
     }
 
-    pub fn defense(&self, _aspect: Aspect) -> u32 {
-        let value = 0;
-        // TODO
-        //if !self.bodywear.is_empty() { value += get_bodywear(&self.bodywear).unwrap().get_defense(aspect); }
-        //if !self.footwear.is_empty() { value += get_footwear(&self.footwear).unwrap().get_defense(aspect); }
-        //if !self.handwear.is_empty() { value += get_handwear(&self.handwear).unwrap().get_defense(aspect); }
-        //if !self.headwear.is_empty() { value += get_headwear(&self.headwear).unwrap().get_defense(aspect); }
-        //if !self.legwear.is_empty() { value += get_legwear(&self.legwear).unwrap().get_defense(aspect); }
+    pub fn defense(&self, aspect: Aspect) -> u32 {
+        let mut value = 0;
+        if !self.bodywear.is_empty() { value += BODYWEAR_STORE.get(&self.bodywear).unwrap().get_defense(aspect); }
+        if !self.footwear.is_empty() { value += FOOTWEAR_STORE.get(&self.footwear).unwrap().get_defense(aspect); }
+        if !self.handwear.is_empty() { value += HANDWEAR_STORE.get(&self.handwear).unwrap().get_defense(aspect); }
+        if !self.headwear.is_empty() { value += HEADWEAR_STORE.get(&self.headwear).unwrap().get_defense(aspect); }
+        if !self.legwear.is_empty() { value += LEGWEAR_STORE.get(&self.legwear).unwrap().get_defense(aspect); }
         value
     }
 
