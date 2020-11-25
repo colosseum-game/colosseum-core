@@ -1,0 +1,13 @@
+{
+    "displayName": "",
+    "description": "",
+    "effect": {
+        "sub_effects": [],
+        "target_queries": [],
+        "targeting_scheme": {
+            "all": false,
+            "multi_target": 0,
+            "single_target": false
+        }
+    }
+}

@@ -6,10 +6,10 @@ edition = "2018"
 build = "build.rs"
 
 [build-dependencies]
-protoc-rust = "2.18.1"
+protoc-rust = { git = "https://github.com/stepancheg/rust-protobuf.git", branch = "master" }
 
 [dependencies]
 include_dir = "0.6.0"
 lazy_static = "1.4.0"
 ncollide3d = "0.26.1"
-protobuf = "2.18.1"
+protobuf = { git = "https://github.com/stepancheg/rust-protobuf.git", branch = "master" }

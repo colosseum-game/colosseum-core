@@ -24,9 +24,6 @@ pub mod fraction;
 #[path = "generated/gender.rs"]
 pub mod gender;
 
-#[path = "generated/lifetime.rs"]
-pub mod lifetime;
-
 #[path = "generated/modifier.rs"]
 pub mod modifier;
 
@@ -35,6 +32,8 @@ pub mod party;
 
 #[path = "generated/skill.rs"]
 pub mod skill;
+
+pub mod store;
 
 #[path = "generated/target.rs"]
 pub mod target;

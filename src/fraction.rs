@@ -1,29 +1,32 @@
-pub use crate::fraction_generated::Fraction;
+pub use crate::fraction_generated::{
+    file_descriptor,
+    Fraction,
+};
 
 impl Fraction {
     pub fn add(&mut self, other: &Fraction) {
-        self.set_numerator(self.numerator * other.denominator + other.numerator * self.denominator);
-        self.set_denominator(self.denominator * self.numerator);
+        self.numerator = self.numerator * other.denominator + other.numerator * self.denominator;
+        self.denominator = self.denominator * self.numerator;
         self.reduce();
     }
 
     pub fn multiply(&mut self, other: &Fraction) {
-        self.set_numerator(self.numerator * other.numerator);
-        self.set_denominator(self.denominator * other.denominator);
+        self.numerator = self.numerator * other.numerator;
+        self.denominator = self.denominator * other.denominator;
         self.reduce();
     }
 
     pub fn one() -> Fraction {
         let mut one = Fraction::new();
-        one.set_numerator(1);
-        one.set_denominator(1);
+        one.numerator = 1;
+        one.denominator = 1;
         one
     }
 
     pub fn reduce(&mut self) {
         let gcd = gcd(self.numerator, self.denominator);
-        self.set_numerator(self.numerator / gcd);
-        self.set_denominator(self.denominator / gcd);
+        self.numerator = self.numerator / gcd;
+        self.denominator = self.denominator / gcd;
     }
 }
 
