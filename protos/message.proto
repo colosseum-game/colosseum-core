@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "combat_event.proto";
+import "combat_state.proto";
+
+message Message {
+    oneof message {
+        CombatEvent combat_event = 1;
+        CombatState combat_state = 2;
+    }
+}

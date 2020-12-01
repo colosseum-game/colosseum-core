@@ -539,7 +539,7 @@ impl ::protobuf::reflect::ProtobufValue for ModifierEffect {
 #[derive(PartialEq,Clone,Default)]
 pub struct SubEffect {
     // message oneof groups
-    pub subeffect: ::std::option::Option<sub_effect::Subeffect>,
+    pub sub_effect: ::std::option::Option<sub_effect::Sub_effect>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::rt::CachedSize,
@@ -559,36 +559,36 @@ impl SubEffect {
     // .DamageEffect damage_effect = 1;
 
     pub fn get_damage_effect(&self) -> &DamageEffect {
-        match self.subeffect {
-            ::std::option::Option::Some(sub_effect::Subeffect::damage_effect(ref v)) => v,
+        match self.sub_effect {
+            ::std::option::Option::Some(sub_effect::Sub_effect::damage_effect(ref v)) => v,
             _ => <DamageEffect as ::protobuf::Message>::default_instance(),
         }
     }
 
     pub fn clear_damage_effect(&mut self) {
-        self.subeffect = ::std::option::Option::None;
+        self.sub_effect = ::std::option::Option::None;
     }
 
     pub fn has_damage_effect(&self) -> bool {
-        match self.subeffect {
-            ::std::option::Option::Some(sub_effect::Subeffect::damage_effect(..)) => true,
+        match self.sub_effect {
+            ::std::option::Option::Some(sub_effect::Sub_effect::damage_effect(..)) => true,
             _ => false,
         }
     }
 
     // Param is passed by value, moved
     pub fn set_damage_effect(&mut self, v: DamageEffect) {
-        self.subeffect = ::std::option::Option::Some(sub_effect::Subeffect::damage_effect(v))
+        self.sub_effect = ::std::option::Option::Some(sub_effect::Sub_effect::damage_effect(v))
     }
 
     // Mutable pointer to the field.
     pub fn mut_damage_effect(&mut self) -> &mut DamageEffect {
-        if let ::std::option::Option::Some(sub_effect::Subeffect::damage_effect(_)) = self.subeffect {
+        if let ::std::option::Option::Some(sub_effect::Sub_effect::damage_effect(_)) = self.sub_effect {
         } else {
-            self.subeffect = ::std::option::Option::Some(sub_effect::Subeffect::damage_effect(DamageEffect::new()));
+            self.sub_effect = ::std::option::Option::Some(sub_effect::Sub_effect::damage_effect(DamageEffect::new()));
         }
-        match self.subeffect {
-            ::std::option::Option::Some(sub_effect::Subeffect::damage_effect(ref mut v)) => v,
+        match self.sub_effect {
+            ::std::option::Option::Some(sub_effect::Sub_effect::damage_effect(ref mut v)) => v,
             _ => panic!(),
         }
     }
@@ -596,8 +596,8 @@ impl SubEffect {
     // Take field
     pub fn take_damage_effect(&mut self) -> DamageEffect {
         if self.has_damage_effect() {
-            match self.subeffect.take() {
-                ::std::option::Option::Some(sub_effect::Subeffect::damage_effect(v)) => v,
+            match self.sub_effect.take() {
+                ::std::option::Option::Some(sub_effect::Sub_effect::damage_effect(v)) => v,
                 _ => panic!(),
             }
         } else {
@@ -605,39 +605,39 @@ impl SubEffect {
         }
     }
 
-    // .DamageOverTimeEffect dot_effect = 3;
+    // .DamageOverTimeEffect dot_effect = 2;
 
     pub fn get_dot_effect(&self) -> &DamageOverTimeEffect {
-        match self.subeffect {
-            ::std::option::Option::Some(sub_effect::Subeffect::dot_effect(ref v)) => v,
+        match self.sub_effect {
+            ::std::option::Option::Some(sub_effect::Sub_effect::dot_effect(ref v)) => v,
             _ => <DamageOverTimeEffect as ::protobuf::Message>::default_instance(),
         }
     }
 
     pub fn clear_dot_effect(&mut self) {
-        self.subeffect = ::std::option::Option::None;
+        self.sub_effect = ::std::option::Option::None;
     }
 
     pub fn has_dot_effect(&self) -> bool {
-        match self.subeffect {
-            ::std::option::Option::Some(sub_effect::Subeffect::dot_effect(..)) => true,
+        match self.sub_effect {
+            ::std::option::Option::Some(sub_effect::Sub_effect::dot_effect(..)) => true,
             _ => false,
         }
     }
 
     // Param is passed by value, moved
     pub fn set_dot_effect(&mut self, v: DamageOverTimeEffect) {
-        self.subeffect = ::std::option::Option::Some(sub_effect::Subeffect::dot_effect(v))
+        self.sub_effect = ::std::option::Option::Some(sub_effect::Sub_effect::dot_effect(v))
     }
 
     // Mutable pointer to the field.
     pub fn mut_dot_effect(&mut self) -> &mut DamageOverTimeEffect {
-        if let ::std::option::Option::Some(sub_effect::Subeffect::dot_effect(_)) = self.subeffect {
+        if let ::std::option::Option::Some(sub_effect::Sub_effect::dot_effect(_)) = self.sub_effect {
         } else {
-            self.subeffect = ::std::option::Option::Some(sub_effect::Subeffect::dot_effect(DamageOverTimeEffect::new()));
+            self.sub_effect = ::std::option::Option::Some(sub_effect::Sub_effect::dot_effect(DamageOverTimeEffect::new()));
         }
-        match self.subeffect {
-            ::std::option::Option::Some(sub_effect::Subeffect::dot_effect(ref mut v)) => v,
+        match self.sub_effect {
+            ::std::option::Option::Some(sub_effect::Sub_effect::dot_effect(ref mut v)) => v,
             _ => panic!(),
         }
     }
@@ -645,8 +645,8 @@ impl SubEffect {
     // Take field
     pub fn take_dot_effect(&mut self) -> DamageOverTimeEffect {
         if self.has_dot_effect() {
-            match self.subeffect.take() {
-                ::std::option::Option::Some(sub_effect::Subeffect::dot_effect(v)) => v,
+            match self.sub_effect.take() {
+                ::std::option::Option::Some(sub_effect::Sub_effect::dot_effect(v)) => v,
                 _ => panic!(),
             }
         } else {
@@ -654,39 +654,39 @@ impl SubEffect {
         }
     }
 
-    // .ModifierEffect modifier_effect = 2;
+    // .ModifierEffect modifier_effect = 3;
 
     pub fn get_modifier_effect(&self) -> &ModifierEffect {
-        match self.subeffect {
-            ::std::option::Option::Some(sub_effect::Subeffect::modifier_effect(ref v)) => v,
+        match self.sub_effect {
+            ::std::option::Option::Some(sub_effect::Sub_effect::modifier_effect(ref v)) => v,
             _ => <ModifierEffect as ::protobuf::Message>::default_instance(),
         }
     }
 
     pub fn clear_modifier_effect(&mut self) {
-        self.subeffect = ::std::option::Option::None;
+        self.sub_effect = ::std::option::Option::None;
     }
 
     pub fn has_modifier_effect(&self) -> bool {
-        match self.subeffect {
-            ::std::option::Option::Some(sub_effect::Subeffect::modifier_effect(..)) => true,
+        match self.sub_effect {
+            ::std::option::Option::Some(sub_effect::Sub_effect::modifier_effect(..)) => true,
             _ => false,
         }
     }
 
     // Param is passed by value, moved
     pub fn set_modifier_effect(&mut self, v: ModifierEffect) {
-        self.subeffect = ::std::option::Option::Some(sub_effect::Subeffect::modifier_effect(v))
+        self.sub_effect = ::std::option::Option::Some(sub_effect::Sub_effect::modifier_effect(v))
     }
 
     // Mutable pointer to the field.
     pub fn mut_modifier_effect(&mut self) -> &mut ModifierEffect {
-        if let ::std::option::Option::Some(sub_effect::Subeffect::modifier_effect(_)) = self.subeffect {
+        if let ::std::option::Option::Some(sub_effect::Sub_effect::modifier_effect(_)) = self.sub_effect {
         } else {
-            self.subeffect = ::std::option::Option::Some(sub_effect::Subeffect::modifier_effect(ModifierEffect::new()));
+            self.sub_effect = ::std::option::Option::Some(sub_effect::Sub_effect::modifier_effect(ModifierEffect::new()));
         }
-        match self.subeffect {
-            ::std::option::Option::Some(sub_effect::Subeffect::modifier_effect(ref mut v)) => v,
+        match self.sub_effect {
+            ::std::option::Option::Some(sub_effect::Sub_effect::modifier_effect(ref mut v)) => v,
             _ => panic!(),
         }
     }
@@ -694,8 +694,8 @@ impl SubEffect {
     // Take field
     pub fn take_modifier_effect(&mut self) -> ModifierEffect {
         if self.has_modifier_effect() {
-            match self.subeffect.take() {
-                ::std::option::Option::Some(sub_effect::Subeffect::modifier_effect(v)) => v,
+            match self.sub_effect.take() {
+                ::std::option::Option::Some(sub_effect::Sub_effect::modifier_effect(v)) => v,
                 _ => panic!(),
             }
         } else {
@@ -736,17 +736,17 @@ impl SubEffect {
 
 impl ::protobuf::Message for SubEffect {
     fn is_initialized(&self) -> bool {
-        if let Some(sub_effect::Subeffect::damage_effect(ref v)) = self.subeffect {
+        if let Some(sub_effect::Sub_effect::damage_effect(ref v)) = self.sub_effect {
             if !v.is_initialized() {
                 return false;
             }
         }
-        if let Some(sub_effect::Subeffect::dot_effect(ref v)) = self.subeffect {
+        if let Some(sub_effect::Sub_effect::dot_effect(ref v)) = self.sub_effect {
             if !v.is_initialized() {
                 return false;
             }
         }
-        if let Some(sub_effect::Subeffect::modifier_effect(ref v)) = self.subeffect {
+        if let Some(sub_effect::Sub_effect::modifier_effect(ref v)) = self.sub_effect {
             if !v.is_initialized() {
                 return false;
             }
@@ -762,19 +762,19 @@ impl ::protobuf::Message for SubEffect {
                     if wire_type != ::protobuf::wire_format::WireTypeLengthDelimited {
                         return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
                     }
-                    self.subeffect = ::std::option::Option::Some(sub_effect::Subeffect::damage_effect(is.read_message()?));
-                },
-                3 => {
-                    if wire_type != ::protobuf::wire_format::WireTypeLengthDelimited {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
-                    }
-                    self.subeffect = ::std::option::Option::Some(sub_effect::Subeffect::dot_effect(is.read_message()?));
+                    self.sub_effect = ::std::option::Option::Some(sub_effect::Sub_effect::damage_effect(is.read_message()?));
                 },
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeLengthDelimited {
                         return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
                     }
-                    self.subeffect = ::std::option::Option::Some(sub_effect::Subeffect::modifier_effect(is.read_message()?));
+                    self.sub_effect = ::std::option::Option::Some(sub_effect::Sub_effect::dot_effect(is.read_message()?));
+                },
+                3 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeLengthDelimited {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    self.sub_effect = ::std::option::Option::Some(sub_effect::Sub_effect::modifier_effect(is.read_message()?));
                 },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
@@ -788,17 +788,17 @@ impl ::protobuf::Message for SubEffect {
     #[allow(unused_variables)]
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
-        if let ::std::option::Option::Some(ref v) = self.subeffect {
+        if let ::std::option::Option::Some(ref v) = self.sub_effect {
             match v {
-                &sub_effect::Subeffect::damage_effect(ref v) => {
+                &sub_effect::Sub_effect::damage_effect(ref v) => {
                     let len = v.compute_size();
                     my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
                 },
-                &sub_effect::Subeffect::dot_effect(ref v) => {
+                &sub_effect::Sub_effect::dot_effect(ref v) => {
                     let len = v.compute_size();
                     my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
                 },
-                &sub_effect::Subeffect::modifier_effect(ref v) => {
+                &sub_effect::Sub_effect::modifier_effect(ref v) => {
                     let len = v.compute_size();
                     my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
                 },
@@ -810,16 +810,16 @@ impl ::protobuf::Message for SubEffect {
     }
 
     fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream<'_>) -> ::protobuf::ProtobufResult<()> {
-        if let ::std::option::Option::Some(ref v) = self.subeffect {
+        if let ::std::option::Option::Some(ref v) = self.sub_effect {
             match v {
-                &sub_effect::Subeffect::damage_effect(ref v) => {
+                &sub_effect::Sub_effect::damage_effect(ref v) => {
                     ::protobuf::rt::write_message_field_with_cached_size(1, v, os)?;
                 },
-                &sub_effect::Subeffect::dot_effect(ref v) => {
-                    ::protobuf::rt::write_message_field_with_cached_size(3, v, os)?;
-                },
-                &sub_effect::Subeffect::modifier_effect(ref v) => {
+                &sub_effect::Sub_effect::dot_effect(ref v) => {
                     ::protobuf::rt::write_message_field_with_cached_size(2, v, os)?;
+                },
+                &sub_effect::Sub_effect::modifier_effect(ref v) => {
+                    ::protobuf::rt::write_message_field_with_cached_size(3, v, os)?;
                 },
             };
         }
@@ -849,7 +849,7 @@ impl ::protobuf::Message for SubEffect {
 
     fn default_instance() -> &'static SubEffect {
         static instance: SubEffect = SubEffect {
-            subeffect: ::std::option::Option::None,
+            sub_effect: ::std::option::Option::None,
             unknown_fields: ::protobuf::UnknownFields::new(),
             cached_size: ::protobuf::rt::CachedSize::new(),
         };
@@ -859,9 +859,9 @@ impl ::protobuf::Message for SubEffect {
 
 impl ::protobuf::Clear for SubEffect {
     fn clear(&mut self) {
-        self.subeffect = ::std::option::Option::None;
-        self.subeffect = ::std::option::Option::None;
-        self.subeffect = ::std::option::Option::None;
+        self.sub_effect = ::std::option::Option::None;
+        self.sub_effect = ::std::option::Option::None;
+        self.sub_effect = ::std::option::Option::None;
         self.unknown_fields.clear();
     }
 }
@@ -880,13 +880,13 @@ impl ::protobuf::reflect::ProtobufValue for SubEffect {
 pub mod sub_effect {
 
     #[derive(Clone,PartialEq,Debug)]
-    pub enum Subeffect {
+    pub enum Sub_effect {
         damage_effect(super::DamageEffect),
         dot_effect(super::DamageOverTimeEffect),
         modifier_effect(super::ModifierEffect),
     }
 
-    impl ::protobuf::Oneof for Subeffect {
+    impl ::protobuf::Oneof for Sub_effect {
     }
 }
 
@@ -1724,11 +1724,11 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     scaling\x12-\n\x11lifetime_duration\x18\x03\x20\x01(\rH\0R\x10lifetimeDu\
     rationB\n\n\x08lifetime\"a\n\x0eModifierEffect\x12%\n\x08modifier\x18\
     \x01\x20\x01(\x0b2\t.ModifierR\x08modifier\x12(\n\tattribute\x18\x02\x20\
-    \x01(\x0e2\n.AttributeR\tattribute\"\xc2\x01\n\tSubEffect\x124\n\rdamage\
+    \x01(\x0e2\n.AttributeR\tattribute\"\xc3\x01\n\tSubEffect\x124\n\rdamage\
     _effect\x18\x01\x20\x01(\x0b2\r.DamageEffectH\0R\x0cdamageEffect\x126\n\
-    \ndot_effect\x18\x03\x20\x01(\x0b2\x15.DamageOverTimeEffectH\0R\tdotEffe\
-    ct\x12:\n\x0fmodifier_effect\x18\x02\x20\x01(\x0b2\x0f.ModifierEffectH\0\
-    R\x0emodifierEffectB\x0b\n\tsubeffect\"l\n\nTargetFlag\x12\x12\n\x03any\
+    \ndot_effect\x18\x02\x20\x01(\x0b2\x15.DamageOverTimeEffectH\0R\tdotEffe\
+    ct\x12:\n\x0fmodifier_effect\x18\x03\x20\x01(\x0b2\x0f.ModifierEffectH\0\
+    R\x0emodifierEffectB\x0c\n\nsub_effect\"l\n\nTargetFlag\x12\x12\n\x03any\
     \x18\x01\x20\x01(\x08H\0R\x03any\x12!\n\x06gender\x18\x02\x20\x01(\x0e2\
     \x07.GenderH\0R\x06gender\x12\x18\n\x06origin\x18\x03\x20\x01(\x08H\0R\
     \x06originB\r\n\x0btarget_flag\"=\n\x0bTargetQuery\x12.\n\x0ctarget_flag\

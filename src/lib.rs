@@ -4,6 +4,13 @@ pub mod aspect;
 #[path = "generated/attribute.rs"]
 pub mod attribute;
 
+#[path = "generated/combat_event.rs"]
+pub mod combat_event;
+
+#[path = "generated/combat_state.rs"]
+mod combat_state_generated;
+pub mod combat_state;
+
 #[path = "generated/combatant.rs"]
 mod combatant_generated;
 pub mod combatant;
@@ -23,6 +30,9 @@ pub mod fraction;
 
 #[path = "generated/gender.rs"]
 pub mod gender;
+
+#[path = "generated/message.rs"]
+pub mod message;
 
 #[path = "generated/modifier.rs"]
 pub mod modifier;
