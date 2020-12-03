@@ -9,5 +9,5 @@ use serde::{
 pub struct Weapon {
     pub display_name: String,
     pub description: String,
-    pub use_effects: Vec<Effect>,
+    pub effect: Effect,
 }

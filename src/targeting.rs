@@ -1,9 +1,7 @@
 use crate::{
-    combatant::{
-        Combatant,
-        Gender,
-    },
+    combatant::Combatant,
     effect::EffectSource,
+    gender::Gender,
 };
 
 use serde::{
@@ -33,10 +31,4 @@ pub enum TargetingScheme {
     All,
     MultiTarget(usize),
     SingleTarget,
-}
-
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct Target {
-    pub party_index: usize,
-    pub member_index: usize,
 }

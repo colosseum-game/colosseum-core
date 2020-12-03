@@ -1,8 +1,9 @@
-#[repr(u8)]
-pub enum MessageType {
-    CombatState,
-}
+use crate::{
+    combat_event::CombatEvent,
+    combat_state::CombatState,
+};
 
-pub trait Message {
-    fn message_type() -> MessageType;
+pub enum MessageType {
+    CombatEvent(CombatEvent),
+    CombatState(CombatState),
 }

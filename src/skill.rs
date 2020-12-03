@@ -9,5 +9,5 @@ use serde::{
 pub struct Skill {
     pub display_name: String,
     pub description: String,
-    pub effects: Vec<Effect>,
+    pub effect: Effect,
 }

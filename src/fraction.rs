@@ -10,38 +10,35 @@ pub struct Fraction {
 }
 
 impl Fraction {
-    pub fn new(numerator: u32, denominator: u32) -> Option<Self> {
-        match denominator {
-            denominator if denominator == 0 => None,
-            _ => Some(Fraction { numerator, denominator }),
-        }
-    }
-
-    pub fn add(&self, other: Fraction) -> Self {
-        Self {
+    pub fn add(&self, other: Fraction) -> Fraction {
+        let fraction = Fraction {
             numerator: self.numerator * other.denominator + other.numerator * self.denominator,
             denominator: self.denominator * self.numerator,
-        }.reduce()
+        };
+        fraction.reduce();
+        fraction
     }
 
-    pub fn multiply(&self, other: Fraction) -> Self {
-        Self {
+    pub fn multiply(&self, other: Fraction) -> Fraction {
+        let fraction = Fraction {
             numerator: self.numerator * other.numerator,
             denominator: self.denominator * other.denominator,
-        }.reduce()
+        };
+        fraction.reduce();
+        fraction
     }
 
     pub fn one() -> Self {
-        Self::new(1, 1).unwrap()
+        Fraction {
+            numerator: 1,
+            denominator: 1,
+        }
     }
 
-    pub fn reduce(&self) -> Self {
+    pub fn reduce(&mut self) {
         let gcd = gcd(self.numerator, self.denominator);
-        
-        Self {
-            numerator: self.numerator / gcd,
-            denominator: self.denominator / gcd,
-        }
+        self.numerator /= gcd;
+        self.denominator /= gcd;
     }
 }
 

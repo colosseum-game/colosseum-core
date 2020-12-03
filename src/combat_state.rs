@@ -1,37 +1,31 @@
-pub use crate::combat_state_generated::CombatState;
-
 use crate::{
     aspect::Aspect,
     attribute::Attribute,
-    combat_event::{
-        combat_event,
-        CombatEvent,
-    },
+    combat_event::CombatEvent,
     combatant::Combatant,
-    dot::Dot,
-    effect::sub_effect::SubEffect,
+    dot::DOT,
     fraction::Fraction,
-    lifetime::lifetime,
+    lifetime::Lifetime,
     store::SKILL_STORE,
     target::Target,
 };
+
+pub struct CombatState {
+    
+}
 
 impl CombatState {
     pub fn transform(&mut self, source: Target, mut combat_event: CombatEvent) {
         let source_party_index = source.party_index as usize;
         let source_member_index = source.member_index as usize;
 
-        use combat_event::CombatEvent::*;
+        use CombatEvent::*;
         match combat_event.combat_event.unwrap() {
-            AttackEvent(event) => (),
-            ConsumableEvent(event) => (),
-            EquipableEvent(equipable) => (),
-            ForfeitEvent(_) => (),
-            SkipEvent(_) => (),
-            SkillEvent(event) => {
-                let skill = SKILL_STORE.get(&event.skill).unwrap();
-                let targets = event.targets;
-    
+            AttackEvent { targets } => (),
+            ConsumableEvent {consumable_identifier, targets } => (),
+            ForfeitEvent => (),
+            SkipEvent => (),
+            SkillEvent { skill_identifier, targets } => {
                 for target in &targets {
                     let target_party_index = target.party_index as usize;
                     let target_member_index = target.member_index as usize;
@@ -67,6 +61,7 @@ impl CombatState {
                     };
 
                     // apply every effect in the current sub_action
+                    let skill = SKILL_STORE.get(&skill_identifier).unwrap();
                     for sub_effect in &skill.effect.unwrap().sub_effects {
                         use SubEffect::*;
                         match sub_effect.sub_effect.unwrap() {

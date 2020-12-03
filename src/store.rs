@@ -21,10 +21,16 @@ use lazy_static::lazy_static;
 use std::collections::HashMap;
 
 macro_rules! generate_store {
-    ($dir_const: ident, $path: literal, $stored: ident, $store: ident, $store_const: ident, $getter: ident) => {
+    ($dir_const: ident, $path: literal, $stored: ident, $store: ident, $store_const: ident) => {
         const $dir_const: Dir = include_dir!($path);
 
         pub struct $store<'a>(HashMap<&'a str, $stored>);
+
+        impl<'a> $store<'a> {
+            pub fn get(&self, identifier: &str) -> Option<&$stored> {
+                self.0.get(identifier)
+            }
+        }
 
         lazy_static! {
             pub static ref $store_const: $store<'static> = $store({
@@ -38,21 +44,17 @@ macro_rules! generate_store {
                 hashmap
             });
         }
-
-        pub fn $getter(identifier: &str) -> Option<&$stored> {
-            $store_const.0.get(identifier)
-        }
     };
 }
 
-generate_store!(BODYWEAR_DIRECTORY, "content/bodywear", Bodywear, BodywearStore, BODYWEAR_STORE, get_bodywear);
-generate_store!(CONSUMABLE_DIRECTORY, "content/consumable", Consumable, ConsumableStore, CONSUMABLE_STORE, get_consumable);
-generate_store!(FOOTWEAR_DIRECTORY, "content/footwear", Footwear, FootwearStore, FOOTWEAR_STORE, get_footwear);
-generate_store!(HANDWEAR_DIRECTORY, "content/handwear", Handwear, HandwearStore, HANDWEAR_STORE, get_handwear);
-generate_store!(HEADWEAR_DIRECTORY, "content/headwear", Headwear, HeadwearStore, HEADWEAR_STORE, get_headwear);
-generate_store!(LEGWEAR_DIRECTORY, "content/legwear", Legwear, LegwearStore, LEGWEAR_STORE, get_legwear);
-generate_store!(SKILL_DIRECTORY, "content/skill", Skill, SkillStore, SKILL_STORE, get_skill);
-generate_store!(WEAPON_DIRECTORY, "content/weapon", Weapon, WeaponStore, WEAPON_STORE, get_weapon);
+generate_store!(BODYWEAR_DIRECTORY, "content/bodywear", Bodywear, BodywearStore, BODYWEAR_STORE);
+generate_store!(CONSUMABLE_DIRECTORY, "content/consumable", Consumable, ConsumableStore, CONSUMABLE_STORE);
+generate_store!(FOOTWEAR_DIRECTORY, "content/footwear", Footwear, FootwearStore, FOOTWEAR_STORE);
+generate_store!(HANDWEAR_DIRECTORY, "content/handwear", Handwear, HandwearStore, HANDWEAR_STORE);
+generate_store!(HEADWEAR_DIRECTORY, "content/headwear", Headwear, HeadwearStore, HEADWEAR_STORE);
+generate_store!(LEGWEAR_DIRECTORY, "content/legwear", Legwear, LegwearStore, LEGWEAR_STORE);
+generate_store!(SKILL_DIRECTORY, "content/skill", Skill, SkillStore, SKILL_STORE);
+generate_store!(WEAPON_DIRECTORY, "content/weapon", Weapon, WeaponStore, WEAPON_STORE);
 
 pub fn initialize() {
     lazy_static::initialize(&BODYWEAR_STORE);
@@ -72,12 +74,5 @@ mod tests {
     #[test]
     fn initialization() {
         initialize();
-    }
-
-    #[test]
-    fn quick_wearable_check() {
-        let bodywear = get_bodywear("breakers_longsleeve");
-        let bodywear2 = serde_json::from_str(include_str!("../content/bodywear/breakers_longsleeve.json")).unwrap();
-        assert_eq!(bodywear, Some(&bodywear2));
     }
 }

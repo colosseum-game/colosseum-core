@@ -1,9 +1,7 @@
 use crate::{
     aspect::Aspect,
-    combatant::{
-        Attribute,
-        Combatant,
-    },
+    attribute::Attribute,
+    combatant::Combatant,
     lifetime::Lifetime,
     modifier::Modifier,
     targeting::{

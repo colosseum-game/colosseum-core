@@ -1,7 +1,9 @@
 use crate::{
     aspect::Aspect,
+    attribute::Attribute,
+    dot::DOT,
     fraction::Fraction,
-<<<<<<< HEAD
+    gender::Gender,
     store::{
         BODYWEAR_STORE,
         FOOTWEAR_STORE,
@@ -9,61 +11,22 @@ use crate::{
         HEADWEAR_STORE,
         LEGWEAR_STORE,
     },
-=======
-    lifetime::Lifetime,
     modifier::{
         Modifier,
         ModifierExpression,
-    },
-    store::{
-        get_bodywear,
-        get_footwear,
-        get_handwear,
-        get_headwear,
-        get_legwear,
     },
 };
 
 use serde::{
     Deserialize,
     Serialize,
->>>>>>> parent of 87937be... moved to using protobuf and code generation for every domain type
 };
-
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub enum Attribute {
-    Agility,
-    Dexterity,
-    Intelligence,
-    Mind,
-    Strength,
-    Vigor,
-    Vitality,
-}
-
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub enum Gender {
-    Female,
-    Male,
-    None,
-}
-
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct DOT {
-    pub aspect: Aspect,
-    pub damage_value: u32,
-    pub lifetime: Lifetime,
-}
-
-pub const SKILL_COUNT_MAX: usize = 32;
-pub const MODIFIER_COUNT_MAX: usize = 32;
-pub const DOT_COUNT_MAX: usize = 32;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Combatant {
     pub name: String,
     pub gender: Gender,
-    pub skills: [Option<String>; SKILL_COUNT_MAX],
+    pub skills: Vec<String>,
 
     pub agility: u32,
     pub dexterity: u32,
@@ -73,24 +36,24 @@ pub struct Combatant {
     pub vigor: u32,
     pub vitality: u32,
 
-    pub bodywear: Option<String>,
-    pub footwear: Option<String>,
-    pub handwear: Option<String>,
-    pub headwear: Option<String>,
-    pub legwear: Option<String>,
-    pub weapon: Option<String>,
+    pub bodywear: String,
+    pub footwear: String,
+    pub handwear: String,
+    pub headwear: String,
+    pub legwear: String,
+    pub weapon: String,
 
     pub hp: u32,
     pub fatigue: u32,
-    pub dots: [Option<DOT>; DOT_COUNT_MAX],
+    pub dots: Vec<DOT>,
 
-    pub agility_modifiers: [Option<Modifier>; MODIFIER_COUNT_MAX],
-    pub dexterity_modifiers: [Option<Modifier>; MODIFIER_COUNT_MAX],
-    pub intelligence_modifiers: [Option<Modifier>; MODIFIER_COUNT_MAX],
-    pub mind_modifiers: [Option<Modifier>; MODIFIER_COUNT_MAX],
-    pub strength_modifiers: [Option<Modifier>; MODIFIER_COUNT_MAX],
-    pub vigor_modifiers: [Option<Modifier>; MODIFIER_COUNT_MAX],
-    pub vitality_modifiers: [Option<Modifier>; MODIFIER_COUNT_MAX],
+    pub agility_modifiers: Vec<Modifier>,
+    pub dexterity_modifiers: Vec<Modifier>,
+    pub intelligence_modifiers: Vec<Modifier>,
+    pub mind_modifiers: Vec<Modifier>,
+    pub strength_modifiers: Vec<Modifier>,
+    pub vigor_modifiers: Vec<Modifier>,
+    pub vitality_modifiers: Vec<Modifier>,
 }
 
 impl Combatant {
@@ -115,38 +78,38 @@ impl Combatant {
     }
 
     pub fn attribute_raw(&self, attribute: Attribute) -> u32 {
+        use Attribute::*;
         match attribute {
-            Attribute::Agility => self.agility,
-            Attribute::Dexterity => self.dexterity,
-            Attribute::Intelligence => self.intelligence,
-            Attribute::Mind => self.mind,
-            Attribute::Strength => self.strength,
-            Attribute::Vigor => self.vigor,
-            Attribute::Vitality => self.vitality,
+            Agility => self.agility,
+            Dexterity => self.dexterity,
+            Intelligence => self.intelligence,
+            Mind => self.mind,
+            Strength => self.strength,
+            Vigor => self.vigor,
+            Vitality => self.vitality,
         }
     }
 
     pub fn attribute(&self, attribute: Attribute) -> u32 {
+        use Attribute::*;
         let attribute_modifiers = match attribute {
-            Attribute::Agility => &self.agility_modifiers,
-            Attribute::Dexterity => &self.dexterity_modifiers,
-            Attribute::Intelligence => &self.intelligence_modifiers,
-            Attribute::Mind => &self.mind_modifiers,
-            Attribute::Strength => &self.strength_modifiers,
-            Attribute::Vigor => &self.vigor_modifiers,
-            Attribute::Vitality => &self.vitality_modifiers,
+            Agility => &self.agility_modifiers,
+            Dexterity => &self.dexterity_modifiers,
+            Intelligence => &self.intelligence_modifiers,
+            Mind => &self.mind_modifiers,
+            Strength => &self.strength_modifiers,
+            Vigor => &self.vigor_modifiers,
+            Vitality => &self.vitality_modifiers,
         };
 
-        let (add, multiply, subtract) = attribute_modifiers.iter().fold((0, Fraction::one(), 0), |acc, modifier|
-            match modifier {
-                None => (acc.0, acc.1, acc.2),
-                Some(modifier) => match modifier.expression {
-                    ModifierExpression::Add(value) => (acc.0 + value, acc.1, acc.2),
-                    ModifierExpression::Multiply(value) => (acc.0, acc.1.multiply(value), acc.2),
-                    ModifierExpression::Subtract(value) => (acc.0, acc.1, acc.2 + value),
-                }
+        let (add, multiply, subtract) = attribute_modifiers.iter().fold((0, Fraction::one(), 0), |acc, modifier| {
+            use ModifierExpression::*;
+            match modifier.expression {
+                Add(value) => (acc.0 + value, acc.1, acc.2),
+                Multiply(value) => (acc.0, acc.1.multiply(value), acc.2),
+                Subtract(value) => (acc.0, acc.1, acc.2 + value),
             }
-        );
+        });
 
         let mut value = self.attribute_raw(attribute);
         value += add;
@@ -163,19 +126,11 @@ impl Combatant {
 
     pub fn defense(&self, aspect: Aspect) -> u32 {
         let mut value = 0;
-<<<<<<< HEAD
         if !self.bodywear.is_empty() { value += BODYWEAR_STORE.get(&self.bodywear).unwrap().get_defense(aspect); }
         if !self.footwear.is_empty() { value += FOOTWEAR_STORE.get(&self.footwear).unwrap().get_defense(aspect); }
         if !self.handwear.is_empty() { value += HANDWEAR_STORE.get(&self.handwear).unwrap().get_defense(aspect); }
         if !self.headwear.is_empty() { value += HEADWEAR_STORE.get(&self.headwear).unwrap().get_defense(aspect); }
         if !self.legwear.is_empty() { value += LEGWEAR_STORE.get(&self.legwear).unwrap().get_defense(aspect); }
-=======
-        if let Some(identifier) = &self.bodywear { value += get_bodywear(identifier).unwrap().get_defense(aspect); }
-        if let Some(identifier) = &self.footwear { value += get_footwear(identifier).unwrap().get_defense(aspect); }
-        if let Some(identifier) = &self.handwear { value += get_handwear(identifier).unwrap().get_defense(aspect); }
-        if let Some(identifier) = &self.headwear { value += get_headwear(identifier).unwrap().get_defense(aspect); }
-        if let Some(identifier) = &self.legwear { value += get_legwear(identifier).unwrap().get_defense(aspect); }
->>>>>>> parent of 87937be... moved to using protobuf and code generation for every domain type
         value
     }
 
