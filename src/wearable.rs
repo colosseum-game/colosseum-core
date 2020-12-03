@@ -1,33 +1,37 @@
-pub use crate::{
-    bodywear::Bodywear,
-    footwear::Footwear,
-    handwear::Handwear,
-    headwear::Headwear,
-    legwear::Legwear,
-};
-
 use crate::aspect::Aspect;
 
-macro_rules! generate_wearable_impl {
+use serde::{
+    Deserialize,
+    Serialize,
+};
+
+macro_rules! generate_wearable {
     ($wearable: ident) => {
+        #[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
+        pub struct $wearable {
+            pub display_name: String,
+            pub description: String,
+            pub fire_defense: u32,
+            pub frost_defense: u32,
+            pub lightning_defense: u32,
+            pub physical_defense: u32,
+        }
+
         impl $wearable {
             pub fn get_defense(&self, aspect: Aspect) -> u32 {
-                use Aspect::*;
-
                 match aspect {
-                    ASPECT_NONE => 0,
-                    ASPECT_FIRE => self.fire_defense,
-                    ASPECT_FROST => self.frost_defense,
-                    ASPECT_LIGHTNING => self.lightning_defense,
-                    ASPECT_PHYSICAL => self.physical_defense,
+                    Aspect::Fire => self.fire_defense,
+                    Aspect::Frost => self.frost_defense,
+                    Aspect::Lightning => self.lightning_defense,
+                    Aspect::Physical => self.physical_defense,
                 }
             }
         }
     }
 }
 
-generate_wearable_impl!(Bodywear);
-generate_wearable_impl!(Footwear);
-generate_wearable_impl!(Handwear);
-generate_wearable_impl!(Headwear);
-generate_wearable_impl!(Legwear);
+generate_wearable!(Bodywear);
+generate_wearable!(Footwear);
+generate_wearable!(Handwear);
+generate_wearable!(Headwear);
+generate_wearable!(Legwear);
