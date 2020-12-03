@@ -281,21 +281,24 @@ dependencies = [
 
 [[package]]
 name = "protobuf"
-version = "3.0.0-pre"
-source = "git+https://github.com/stepancheg/rust-protobuf.git?branch=master#a2cddc9a85dc262c54eb5a07485184b39bbca1e7"
+version = "2.18.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "da78e04bc0e40f36df43ecc6575e4f4b180e8156c4efd73f13d5619479b05696"
 
 [[package]]
 name = "protobuf-codegen"
-version = "3.0.0-pre"
-source = "git+https://github.com/stepancheg/rust-protobuf.git?branch=master#a2cddc9a85dc262c54eb5a07485184b39bbca1e7"
+version = "2.18.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "49b2b929363268881afe6d24351e8b711ea5a1901a5e1549d3723ebcc5d3696d"
 dependencies = [
  "protobuf",
 ]
 
 [[package]]
 name = "protoc"
-version = "3.0.0-pre"
-source = "git+https://github.com/stepancheg/rust-protobuf.git?branch=master#a2cddc9a85dc262c54eb5a07485184b39bbca1e7"
+version = "2.18.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a2dbb118371acf8c4d45c23ad8852ab3abb07f45758fdfede9e37cad1570bbef"
 dependencies = [
  "log",
  "which",
@@ -303,8 +306,9 @@ dependencies = [
 
 [[package]]
 name = "protoc-rust"
-version = "3.0.0-pre"
-source = "git+https://github.com/stepancheg/rust-protobuf.git?branch=master#a2cddc9a85dc262c54eb5a07485184b39bbca1e7"
+version = "2.18.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "da243950eeb0d0d4893413ff7ea54aec009b3ac692cd0b3bb0884094a8a72417"
 dependencies = [
  "protobuf",
  "protobuf-codegen",

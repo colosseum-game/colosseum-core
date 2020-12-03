@@ -1,7 +1,4 @@
-pub use crate::combatant_generated::{
-    Combatant,
-    file_descriptor,
-};
+pub use crate::combatant_generated::Combatant;
 
 use crate::{
     aspect::Aspect,

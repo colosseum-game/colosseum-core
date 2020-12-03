@@ -1,122 +1,131 @@
-pub use crate::combat_state_generated::{
-    CombatState,
-    file_descriptor,
-};
+pub use crate::combat_state_generated::CombatState;
 
 use crate::{
     aspect::Aspect,
     attribute::Attribute,
-    combat_event::CombatEvent,
+    combat_event::{
+        combat_event,
+        CombatEvent,
+    },
     combatant::Combatant,
-    dot::DOT,
+    dot::Dot,
+    effect::sub_effect::SubEffect,
     fraction::Fraction,
+    lifetime::lifetime,
     store::SKILL_STORE,
     target::Target,
 };
 
 impl CombatState {
-    pub fn transform(&mut self, source: Target, mut event: CombatEvent) {
+    pub fn transform(&mut self, source: Target, mut combat_event: CombatEvent) {
         let source_party_index = source.party_index as usize;
         let source_member_index = source.member_index as usize;
 
-        if event.has_attack_event() {
-
-        } else if event.has_consumable_event() {
-
-        } else if event.has_equipable_event() {
-            
-        } else if event.has_forfeit_event() {
-
-        } else if event.has_skill_event() {
-            let skill_event = event.take_skill_event();
-            let skill = SKILL_STORE.get(&skill_event.skill).unwrap();
-            let targets = skill_event.targets;
-
-            for target in &targets {
-                let target_party_index = target.party_index as usize;
-                let target_member_index = target.member_index as usize;
-
-                let (source, target) = {
-                    if source_party_index > target_party_index {
-                        let (target_container, source_container) = self.parties.split_at_mut(source_party_index);
-                        let source = Some(&source_container[0].members[source_member_index]);
-                        let target = &mut target_container[target_party_index].members[target_member_index];
-                        (source, target)
-                    } else if source_party_index < target_party_index {
-                        let (source_container, target_container) = self.parties.split_at_mut(target_party_index);
-                        let source = Some(&source_container[source_party_index].members[source_member_index]);
-                        let target = &mut target_container[0].members[target_member_index];
-                        (source, target)
-                    } else {
-                        if source_member_index > target_member_index {
-                            let (target_container, source_container) = self.parties[source_party_index].members.split_at_mut(source_member_index);
-                            let source = Some(&source_container[0]);
-                            let target = &mut target_container[target_member_index];
+        use combat_event::CombatEvent::*;
+        match combat_event.combat_event.unwrap() {
+            AttackEvent(event) => (),
+            ConsumableEvent(event) => (),
+            EquipableEvent(equipable) => (),
+            ForfeitEvent(_) => (),
+            SkipEvent(_) => (),
+            SkillEvent(event) => {
+                let skill = SKILL_STORE.get(&event.skill).unwrap();
+                let targets = event.targets;
+    
+                for target in &targets {
+                    let target_party_index = target.party_index as usize;
+                    let target_member_index = target.member_index as usize;
+    
+                    let (source, target) = {
+                        if source_party_index > target_party_index {
+                            let (target_container, source_container) = self.parties.split_at_mut(source_party_index);
+                            let source = Some(&source_container[0].members[source_member_index]);
+                            let target = &mut target_container[target_party_index].members[target_member_index];
                             (source, target)
-                        } else if source_member_index < target_member_index {
-                            let (source_container, target_container) = self.parties[source_party_index].members.split_at_mut(target_member_index);
-                            let source = Some(&source_container[source_member_index]);
-                            let target = &mut target_container[0];
+                        } else if source_party_index < target_party_index {
+                            let (source_container, target_container) = self.parties.split_at_mut(target_party_index);
+                            let source = Some(&source_container[source_party_index].members[source_member_index]);
+                            let target = &mut target_container[0].members[target_member_index];
                             (source, target)
                         } else {
-                            let source = None;
-                            let target = &mut self.parties[source_party_index].members[source_member_index];
-                            (source, target)
+                            if source_member_index > target_member_index {
+                                let (target_container, source_container) = self.parties[source_party_index].members.split_at_mut(source_member_index);
+                                let source = Some(&source_container[0]);
+                                let target = &mut target_container[target_member_index];
+                                (source, target)
+                            } else if source_member_index < target_member_index {
+                                let (source_container, target_container) = self.parties[source_party_index].members.split_at_mut(target_member_index);
+                                let source = Some(&source_container[source_member_index]);
+                                let target = &mut target_container[0];
+                                (source, target)
+                            } else {
+                                let source = None;
+                                let target = &mut self.parties[source_party_index].members[source_member_index];
+                                (source, target)
+                            }
                         }
-                    }
-                };
+                    };
 
-                // apply every effect in the current sub_action
-                for sub_effect in &skill.effect.get_ref().sub_effects {
-                    if sub_effect.has_damage_effect() {
-                        let damage_effect = sub_effect.get_damage_effect();
-                        let aspect = damage_effect.aspect.enum_value().unwrap();
-                        let scaling = damage_effect.scaling.get_ref();
-                        process_damage(target, aspect, calculate_damage_value(target, source, aspect, scaling))
-                    } else if sub_effect.has_dot_effect() {
-                        let dot_effect = sub_effect.get_dot_effect();
-                        let aspect = dot_effect.aspect.enum_value().unwrap();
-                        let scaling = dot_effect.scaling.get_ref();
-                        let lifetime = if dot_effect.has_lifetime_duration() { Some(dot_effect.get_lifetime_duration()) } else { None };
-                        let damage_value = calculate_damage_value(target, source, aspect, scaling);
+                    // apply every effect in the current sub_action
+                    for sub_effect in &skill.effect.unwrap().sub_effects {
+                        use SubEffect::*;
+                        match sub_effect.sub_effect.unwrap() {
+                            DamageEffect(effect) => {
+                                let aspect = effect.aspect;
+                                let scaling = effect.scaling;
+                                process_damage(target, Aspect::try_from(aspect), calculate_damage_value(target, source, aspect.into().unwrap(), &scaling.unwrap()))
+                            },
+                            DotEffect(effect) => {
+                                let aspect = effect.aspect;
+                                let scaling = effect.scaling;
+                                let lifetime = effect.lifetime;
+                                let damage_value = calculate_damage_value(target, source, aspect.into().unwrap(), &scaling.unwrap());
 
-                        let mut dot = DOT::new();
-                        dot.aspect = protobuf::ProtobufEnumOrUnknown::from(aspect);
-                        dot.damage_value = damage_value;
-                        if let Some(duration) = lifetime { dot.set_lifetime_duration(duration) };
+                                let mut dot = Dot {
+                                    aspect,
+                                    damage_value,
+                                    lifetime,
+                                };
 
-                        target.dots.push(dot);
-                    } else if sub_effect.has_modifier_effect() {
-                        use Attribute::*;
+                                target.dots.push(dot);
+                            }
+                            ModifierEffect(effect) => {
+                                let modifier = effect.modifier.unwrap();
+                                let attribute = effect.attribute;
 
-                        let modifier_effect = sub_effect.get_modifier_effect();
-                        let modifier = modifier_effect.modifier.clone().unwrap();
-                        let attribute = modifier_effect.attribute.unwrap();
-
-                        match attribute {
-                            ATTRIBUTE_AGILITY => target.agility_modifiers.push(modifier),
-                            ATTRIBUTE_DEXTERITY => target.dexterity_modifiers.push(modifier),
-                            ATTRIBUTE_INTELLIGENCE => target.intelligence_modifiers.push(modifier),
-                            ATTRIBUTE_MIND => target.mind_modifiers.push(modifier),
-                            ATTRIBUTE_STRENGTH => target.strength_modifiers.push(modifier),
-                            ATTRIBUTE_VIGOR => target.vigor_modifiers.push(modifier),
-                            ATTRIBUTE_VITALITY => target.vitality_modifiers.push(modifier),
+                                use Attribute::*;
+                                match attribute.into().unwrap() {
+                                    Agility => target.agility_modifiers.push(modifier),
+                                    Dexterity => target.dexterity_modifiers.push(modifier),
+                                    Intelligence => target.intelligence_modifiers.push(modifier),
+                                    Mind => target.mind_modifiers.push(modifier),
+                                    Strength => target.strength_modifiers.push(modifier),
+                                    Vigor => target.vigor_modifiers.push(modifier),
+                                    Vitality => target.vitality_modifiers.push(modifier),
+                                }
+                            }
                         }
                     }
                 }
-            }
+            },
         }
 
         let source = &mut self.parties[source_party_index].members[source_member_index];
 
         // update dots
         for i in 0..source.dots.len() {
-            process_damage(source, source.dots[i].aspect.enum_value().unwrap(), source.dots[i].damage_value);
+            process_damage(source, source.dots[i].aspect.into().unwrap(), source.dots[i].damage_value);
         }
 
         for dot in &mut source.dots {
-            if dot.has_lifetime_duration() && dot.get_lifetime_duration() > 0 {
-                dot.set_lifetime_duration(dot.get_lifetime_duration() - 1);
+            use lifetime::Lifetime::*;
+            match dot.lifetime.unwrap().lifetime {
+                None => (),
+                Some(ref mut lifetime) => {
+                    match lifetime {
+                        Active(ref mut duration) => if *duration > 0 { *duration -= 1 }, 
+                    }
+                }
             }
         }
 
@@ -124,8 +133,14 @@ impl CombatState {
         macro_rules! update_modifiers {
             ($modifiers: ident) => {
                 for modifier in &mut source.$modifiers {
-                    if modifier.has_lifetime_duration() && modifier.get_lifetime_duration() > 0 {
-                        modifier.set_lifetime_duration(modifier.get_lifetime_duration() - 1);
+                    use lifetime::Lifetime::*;
+                    match modifier.lifetime.unwrap().lifetime {
+                        None => (),
+                        Some(ref mut lifetime) => {
+                            match lifetime {
+                                Active(ref mut duration) => if *duration > 0 { *duration -= 1 }, 
+                            }
+                        }
                     }
                 }
             };

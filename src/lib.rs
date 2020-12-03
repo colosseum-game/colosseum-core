@@ -31,8 +31,13 @@ pub mod fraction;
 #[path = "generated/gender.rs"]
 pub mod gender;
 
+<<<<<<< HEAD
 #[path = "generated/message.rs"]
 pub mod message;
+=======
+#[path = "generated/lifetime.rs"]
+pub mod lifetime;
+>>>>>>> parent of aa1a2de... generated some testing content and fixed store
 
 #[path = "generated/modifier.rs"]
 pub mod modifier;
@@ -42,8 +47,6 @@ pub mod party;
 
 #[path = "generated/skill.rs"]
 pub mod skill;
-
-pub mod store;
 
 #[path = "generated/target.rs"]
 pub mod target;
