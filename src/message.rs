@@ -3,7 +3,7 @@ use crate::{
     combat_state::CombatState,
 };
 
-pub enum MessageType {
+pub enum Message {
     CombatEvent(CombatEvent),
     CombatState(CombatState),
 }
