@@ -1,7 +1,7 @@
 {
   "display_name": "Pipe Iron",
   "description": "A metal pipe",
-  "use_effects": [{
+  "effect": {
     "sub_effects": [{
       "Damage": {
         "aspect": "Physical",
@@ -10,5 +10,5 @@
     }],
     "target_flags": [["Any"]],
     "targeting_scheme": { "MultiTarget": 3 }
-  }]
+  }
 }

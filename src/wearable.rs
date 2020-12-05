@@ -7,7 +7,7 @@ use serde::{
 
 macro_rules! generate_wearable {
     ($wearable: ident) => {
-        #[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
+        #[derive(Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
         pub struct $wearable {
             pub display_name: String,
             pub description: String,

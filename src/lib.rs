@@ -15,6 +15,5 @@ pub mod party;
 pub mod skill;
 pub mod store;
 pub mod target;
-pub mod targeting;
 pub mod weapon;
 pub mod wearable;

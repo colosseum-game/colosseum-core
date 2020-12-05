@@ -2,7 +2,7 @@
   "display_name": "Cracked Bellroot Seed",
   "description": "",
   "max_count": 3,
-  "use_effects": [{
+  "effect": {
     "sub_effects": [{
       "Damage": {
           "aspect": "Physical",
@@ -11,6 +11,5 @@
     }],
     "target_flags": [["Any"]],
     "targeting_scheme": "SingleTarget"
-  }]
+  }
 }
-  

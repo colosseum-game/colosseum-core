@@ -5,7 +5,7 @@ use serde::{
     Serialize,
 };
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Default, Deserialize, Serialize)]
 pub struct Skill {
     pub display_name: String,
     pub description: String,
