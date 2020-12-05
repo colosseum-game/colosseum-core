@@ -18,9 +18,6 @@ pub struct CombatState {
 
 impl CombatState {
     pub fn transform(&mut self, source: Target, combat_event: CombatEvent) {
-        let source_party_index = source.party_index as usize;
-        let source_member_index = source.member_index as usize;
-
         use CombatEvent::*;
         match combat_event {
             AttackEvent { targets: _ } => (),
@@ -29,35 +26,31 @@ impl CombatState {
             SkipEvent => (),
             SkillEvent { skill_identifier, targets } => {
                 for target in &targets {
-                    let target_party_index = target.party_index as usize;
-                    let target_member_index = target.member_index as usize;
-    
                     let (source, target) = {
-                        if source_party_index > target_party_index {
-                            let (target_container, source_container) = self.parties.split_at_mut(source_party_index);
-                            let source = Some(&source_container[0].members[source_member_index]);
-                            let target = &mut target_container[target_party_index].members[target_member_index];
+                        if source.party_index > target.party_index {
+                            let (target_container, source_container) = self.parties.split_at_mut(source.party_index);
+                            let source = Some(&source_container[0].members[source.member_index]);
+                            let target = &mut target_container[target.party_index].members[target.member_index];
                             (source, target)
-                        } else if source_party_index < target_party_index {
-                            let (source_container, target_container) = self.parties.split_at_mut(target_party_index);
-                            let source = Some(&source_container[source_party_index].members[source_member_index]);
-                            let target = &mut target_container[0].members[target_member_index];
+                        } else if source.party_index < target.party_index {
+                            let (source_container, target_container) = self.parties.split_at_mut(target.party_index);
+                            let source = Some(&source_container[source.party_index].members[source.member_index]);
+                            let target = &mut target_container[0].members[target.member_index];
                             (source, target)
                         } else {
-                            if source_member_index > target_member_index {
-                                let (target_container, source_container) = self.parties[source_party_index].members.split_at_mut(source_member_index);
+                            if source.member_index > target.member_index {
+                                let (target_container, source_container) = self.parties[source.party_index].members.split_at_mut(source_member_index);
                                 let source = Some(&source_container[0]);
-                                let target = &mut target_container[target_member_index];
+                                let target = &mut target_container[target.member_index];
                                 (source, target)
-                            } else if source_member_index < target_member_index {
-                                let (source_container, target_container) = self.parties[source_party_index].members.split_at_mut(target_member_index);
-                                let source = Some(&source_container[source_member_index]);
+                            } else if source.member_index < target.member_index {
+                                let (source_container, target_container) = self.parties[source.party_index].members.split_at_mut(target_member_index);
+                                let source = Some(&source_container[source.member_index]);
                                 let target = &mut target_container[0];
                                 (source, target)
                             } else {
-                                let source = None;
-                                let target = &mut self.parties[source_party_index].members[source_member_index];
-                                (source, target)
+                                let target = &mut self.parties[source.party_index].members[source.member_index];
+                                (None, target)
                             }
                         }
                     };
@@ -98,7 +91,7 @@ impl CombatState {
             },
         }
 
-        let source = &mut self.parties[source_party_index].members[source_member_index];
+        let source = &mut self.parties[source.party_index].members[source.member_index];
 
         // update dots
         for i in 0..source.dots.len() {
@@ -141,7 +134,7 @@ fn calculate_damage_value(target: &Combatant, source: Option<&Combatant>, aspect
         None => target.raw_damage(aspect),
         Some(source) => source.raw_damage(aspect),
     };
-    
+
     raw_damage * scaling.numerator / scaling.denominator
 }
 
