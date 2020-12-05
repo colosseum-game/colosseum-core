@@ -26,8 +26,8 @@ pub enum EffectSource<'a> {
 #[derive(Debug, Deserialize, Serialize)]
 pub enum SubEffect {
     Damage { aspect: Aspect, scaling: Fraction },
-    Modifier(Modifier, Attribute),
-    DamageOverTime { aspect: Aspect, scaling: Fraction, lifetime: Lifetime },
+    DOT { aspect: Aspect, scaling: Fraction, lifetime: Lifetime },
+    Modifier { modifier: Modifier, attribute: Attribute },
 }
 
 #[derive(Debug, Deserialize, Serialize)]

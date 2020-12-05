@@ -11,7 +11,7 @@ pub struct Fraction {
 
 impl Fraction {
     pub fn add(&self, other: Fraction) -> Fraction {
-        let fraction = Fraction {
+        let mut fraction = Fraction {
             numerator: self.numerator * other.denominator + other.numerator * self.denominator,
             denominator: self.denominator * self.numerator,
         };
@@ -20,7 +20,7 @@ impl Fraction {
     }
 
     pub fn multiply(&self, other: Fraction) -> Fraction {
-        let fraction = Fraction {
+        let mut fraction = Fraction {
             numerator: self.numerator * other.numerator,
             denominator: self.denominator * other.denominator,
         };

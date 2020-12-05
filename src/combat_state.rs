@@ -4,25 +4,27 @@ use crate::{
     combat_event::CombatEvent,
     combatant::Combatant,
     dot::DOT,
+    effect::SubEffect,
     fraction::Fraction,
     lifetime::Lifetime,
+    party::Party,
     store::SKILL_STORE,
     target::Target,
 };
 
 pub struct CombatState {
-    
+    parties: Vec<Party>,
 }
 
 impl CombatState {
-    pub fn transform(&mut self, source: Target, mut combat_event: CombatEvent) {
+    pub fn transform(&mut self, source: Target, combat_event: CombatEvent) {
         let source_party_index = source.party_index as usize;
         let source_member_index = source.member_index as usize;
 
         use CombatEvent::*;
-        match combat_event.combat_event.unwrap() {
-            AttackEvent { targets } => (),
-            ConsumableEvent {consumable_identifier, targets } => (),
+        match combat_event {
+            AttackEvent { targets: _ } => (),
+            ConsumableEvent { consumable_identifier: _, targets: _ } => (),
             ForfeitEvent => (),
             SkipEvent => (),
             SkillEvent { skill_identifier, targets } => {
@@ -62,41 +64,32 @@ impl CombatState {
 
                     // apply every effect in the current sub_action
                     let skill = SKILL_STORE.get(&skill_identifier).unwrap();
-                    for sub_effect in &skill.effect.unwrap().sub_effects {
-                        use SubEffect::*;
-                        match sub_effect.sub_effect.unwrap() {
-                            DamageEffect(effect) => {
-                                let aspect = effect.aspect;
-                                let scaling = effect.scaling;
-                                process_damage(target, Aspect::try_from(aspect), calculate_damage_value(target, source, aspect.into().unwrap(), &scaling.unwrap()))
+                    for sub_effect in &skill.effect.sub_effects {
+                        match sub_effect {
+                            SubEffect::Damage { aspect,  scaling } => {
+                                process_damage(target, *aspect, calculate_damage_value(target, source, *aspect, *scaling))
                             },
-                            DotEffect(effect) => {
-                                let aspect = effect.aspect;
-                                let scaling = effect.scaling;
-                                let lifetime = effect.lifetime;
-                                let damage_value = calculate_damage_value(target, source, aspect.into().unwrap(), &scaling.unwrap());
+                            SubEffect::DOT { aspect, scaling, lifetime } => {
+                                let damage_value = calculate_damage_value(target, source, *aspect, *scaling);
 
-                                let mut dot = Dot {
-                                    aspect,
+                                let dot = DOT {
+                                    aspect: *aspect,
                                     damage_value,
-                                    lifetime,
+                                    lifetime: *lifetime,
                                 };
 
                                 target.dots.push(dot);
-                            }
-                            ModifierEffect(effect) => {
-                                let modifier = effect.modifier.unwrap();
-                                let attribute = effect.attribute;
-
+                            },
+                            SubEffect::Modifier { modifier, attribute } => {
                                 use Attribute::*;
-                                match attribute.into().unwrap() {
-                                    Agility => target.agility_modifiers.push(modifier),
-                                    Dexterity => target.dexterity_modifiers.push(modifier),
-                                    Intelligence => target.intelligence_modifiers.push(modifier),
-                                    Mind => target.mind_modifiers.push(modifier),
-                                    Strength => target.strength_modifiers.push(modifier),
-                                    Vigor => target.vigor_modifiers.push(modifier),
-                                    Vitality => target.vitality_modifiers.push(modifier),
+                                match attribute {
+                                    Agility => target.agility_modifiers.push(*modifier),
+                                    Dexterity => target.dexterity_modifiers.push(*modifier),
+                                    Intelligence => target.intelligence_modifiers.push(*modifier),
+                                    Mind => target.mind_modifiers.push(*modifier),
+                                    Strength => target.strength_modifiers.push(*modifier),
+                                    Vigor => target.vigor_modifiers.push(*modifier),
+                                    Vitality => target.vitality_modifiers.push(*modifier),
                                 }
                             }
                         }
@@ -109,18 +102,14 @@ impl CombatState {
 
         // update dots
         for i in 0..source.dots.len() {
-            process_damage(source, source.dots[i].aspect.into().unwrap(), source.dots[i].damage_value);
+            process_damage(source, source.dots[i].aspect, source.dots[i].damage_value);
         }
 
         for dot in &mut source.dots {
-            use lifetime::Lifetime::*;
-            match dot.lifetime.unwrap().lifetime {
-                None => (),
-                Some(ref mut lifetime) => {
-                    match lifetime {
-                        Active(ref mut duration) => if *duration > 0 { *duration -= 1 }, 
-                    }
-                }
+            use Lifetime::*;
+            match dot.lifetime {
+                Active { ref mut duration } => if *duration > 0 { *duration -= 1 },
+                Constant => (),
             }
         }
 
@@ -128,14 +117,10 @@ impl CombatState {
         macro_rules! update_modifiers {
             ($modifiers: ident) => {
                 for modifier in &mut source.$modifiers {
-                    use lifetime::Lifetime::*;
-                    match modifier.lifetime.unwrap().lifetime {
-                        None => (),
-                        Some(ref mut lifetime) => {
-                            match lifetime {
-                                Active(ref mut duration) => if *duration > 0 { *duration -= 1 }, 
-                            }
-                        }
+                    use Lifetime::*;
+                    match modifier.lifetime {
+                        Active { ref mut duration } => if *duration > 0 { *duration -= 1 },
+                        Constant => (),
                     }
                 }
             };
@@ -151,7 +136,7 @@ impl CombatState {
     }
 }
 
-fn calculate_damage_value(target: &Combatant, source: Option<&Combatant>, aspect: Aspect, scaling: &Fraction) -> u32 {
+fn calculate_damage_value(target: &Combatant, source: Option<&Combatant>, aspect: Aspect, scaling: Fraction) -> u32 {
     let raw_damage = match source {
         None => target.raw_damage(aspect),
         Some(source) => source.raw_damage(aspect),
