@@ -22,7 +22,7 @@ use serde::{
     Serialize,
 };
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Combatant {
     pub name: String,
     pub gender: Gender,

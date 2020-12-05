@@ -12,6 +12,12 @@ use crate::{
     target::Target,
 };
 
+use serde::{
+    Deserialize,
+    Serialize
+};
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CombatState {
     parties: Vec<Party>,
 }
