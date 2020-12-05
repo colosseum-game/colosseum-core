@@ -39,12 +39,12 @@ impl CombatState {
                             (source, target)
                         } else {
                             if source.member_index > target.member_index {
-                                let (target_container, source_container) = self.parties[source.party_index].members.split_at_mut(source_member_index);
+                                let (target_container, source_container) = self.parties[source.party_index].members.split_at_mut(source.member_index);
                                 let source = Some(&source_container[0]);
                                 let target = &mut target_container[target.member_index];
                                 (source, target)
                             } else if source.member_index < target.member_index {
-                                let (source_container, target_container) = self.parties[source.party_index].members.split_at_mut(target_member_index);
+                                let (source_container, target_container) = self.parties[source.party_index].members.split_at_mut(target.member_index);
                                 let source = Some(&source_container[source.member_index]);
                                 let target = &mut target_container[0];
                                 (source, target)
