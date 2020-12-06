@@ -23,6 +23,12 @@ pub struct CombatState {
 }
 
 impl CombatState {
+    pub fn new() -> CombatState {
+        CombatState {
+            parties: vec![],
+        }
+    }
+
     pub fn transform(&mut self, source: Target, combat_event: CombatEvent) {
         use CombatEvent::*;
         match combat_event {

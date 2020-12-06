@@ -3,6 +3,7 @@ pub mod attribute;
 pub mod combat_event;
 pub mod combat_state;
 pub mod combatant;
+pub mod connection;
 pub mod consumable;
 pub mod dot;
 pub mod effect;
