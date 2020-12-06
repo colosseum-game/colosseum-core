@@ -1,6 +1,0 @@
-syntax = "proto3";
-
-message Target {
-    uint32 party_index = 1;
-    uint32 member_index = 2;
-}

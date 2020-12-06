@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-import "party.proto";
-
-message CombatState {
-    repeated Party parties = 1;
-}

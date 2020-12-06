@@ -1,5 +1,10 @@
 {
-    "displayName": "",
-    "description": "",
-    "maxCount": 0
+  "display_name": "",
+  "description": "",
+  "max_count": 0,
+  "effect": {
+    "sub_effects": [],
+    "target_flags": [],
+    "targeting_scheme": "All"
+  }
 }

@@ -1,8 +1,8 @@
 {
-    "displayName": "",
-    "description": "",
-    "fireDefense": 0,
-    "frostDefense": 0,
-    "lightningDefense": 0,
-    "physicalDefense": 0
+  "display_name": "",
+  "description": "",
+  "fire_defense": 0,
+  "frost_defense": 0,
+  "lightning_defense": 0,
+  "physical_defense": 0
 }

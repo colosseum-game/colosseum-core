@@ -1,6 +1,0 @@
-syntax = "proto3";
-
-message Fraction {
-    uint32 numerator = 1;
-    uint32 denominator = 2;
-}

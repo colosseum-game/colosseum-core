@@ -37,7 +37,7 @@ macro_rules! generate_store {
                 let mut hashmap = HashMap::new();
                 for file in $dir_const.files {
                     let file_name = file.path().file_stem().unwrap().to_str().unwrap();
-                    let stored = protobuf::json::parse_from_str(file.contents_utf8().unwrap()).expect("failed to parse content");
+                    let stored = serde_json::from_str(file.contents_utf8().unwrap()).expect(&format!("failed to deserialize {}: {}", $path, file_name));
                     hashmap.insert(file_name, stored);
                 }
 
@@ -47,16 +47,16 @@ macro_rules! generate_store {
     };
 }
 
-generate_store!(BODYWEAR_DIRECTORY, "content/bodywear", Bodywear, BodywearStore, BODYWEAR_STORE);
-generate_store!(CONSUMABLE_DIRECTORY, "content/consumable", Consumable, ConsumableStore, CONSUMABLE_STORE);
-generate_store!(FOOTWEAR_DIRECTORY, "content/footwear", Footwear, FootwearStore, FOOTWEAR_STORE);
-generate_store!(HANDWEAR_DIRECTORY, "content/handwear", Handwear, HandwearStore, HANDWEAR_STORE);
-generate_store!(HEADWEAR_DIRECTORY, "content/headwear", Headwear, HeadwearStore, HEADWEAR_STORE);
-generate_store!(LEGWEAR_DIRECTORY, "content/legwear", Legwear, LegwearStore, LEGWEAR_STORE);
-generate_store!(SKILL_DIRECTORY, "content/skill", Skill, SkillStore, SKILL_STORE);
-generate_store!(WEAPON_DIRECTORY, "content/weapon", Weapon, WeaponStore, WEAPON_STORE);
+generate_store!(BODYWEAR_DIRECTORY, "content/bodywear/", Bodywear, BodywearStore, BODYWEAR_STORE);
+generate_store!(CONSUMABLE_DIRECTORY, "content/consumable/", Consumable, ConsumableStore, CONSUMABLE_STORE);
+generate_store!(FOOTWEAR_DIRECTORY, "content/footwear/", Footwear, FootwearStore, FOOTWEAR_STORE);
+generate_store!(HANDWEAR_DIRECTORY, "content/handwear/", Handwear, HandwearStore, HANDWEAR_STORE);
+generate_store!(HEADWEAR_DIRECTORY, "content/headwear/", Headwear, HeadwearStore, HEADWEAR_STORE);
+generate_store!(LEGWEAR_DIRECTORY, "content/legwear/", Legwear, LegwearStore, LEGWEAR_STORE);
+generate_store!(SKILL_DIRECTORY, "content/skill/", Skill, SkillStore, SKILL_STORE);
+generate_store!(WEAPON_DIRECTORY, "content/weapon/", Weapon, WeaponStore, WEAPON_STORE);
 
-pub fn initialize_stores() {
+pub fn initialize() {
     lazy_static::initialize(&BODYWEAR_STORE);
     lazy_static::initialize(&CONSUMABLE_STORE);
     lazy_static::initialize(&FOOTWEAR_STORE);
@@ -73,26 +73,28 @@ mod tests {
 
     #[test]
     fn initialization() {
-        initialize_stores();
+        initialize();
     }
 
     #[test]
-    fn check_defaults() {
-        macro_rules! check_default {
-            ($store: ident, $stored: ident) => {
-                let default = $store.get("default");
-                let default2: $stored = Default::default();
-                assert_eq!(default, Some(&default2));
+    fn generate_and_verify_defaults() {
+        macro_rules! generate_default {
+            ($default: ident, $path: literal) => {
+                let default: $default = Default::default();
+                let json = serde_json::to_string_pretty(&default).unwrap();
+                std::fs::write($path, json).unwrap();
             };
         }
 
-        check_default!(BODYWEAR_STORE, Bodywear);
-        check_default!(CONSUMABLE_STORE, Consumable);
-        check_default!(FOOTWEAR_STORE, Footwear);
-        check_default!(HANDWEAR_STORE, Handwear);
-        check_default!(HEADWEAR_STORE, Headwear);
-        check_default!(LEGWEAR_STORE, Legwear);
-        check_default!(SKILL_STORE, Skill);
-        check_default!(WEAPON_STORE, Weapon);
+        generate_default!(Bodywear, "content/bodywear/default.json");
+        generate_default!(Consumable, "content/consumable/default.json");
+        generate_default!(Footwear, "content/footwear/default.json");
+        generate_default!(Handwear, "content/handwear/default.json");
+        generate_default!(Headwear, "content/headwear/default.json");
+        generate_default!(Legwear, "content/legwear/default.json");
+        generate_default!(Skill, "content/skill/default.json");
+        generate_default!(Weapon, "content/weapon/default.json");
+
+        initialize();
     }
 }
