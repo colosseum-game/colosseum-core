@@ -5,6 +5,10 @@ use serde::{
     Serialize,
 };
 
+#[path = "generated/skill.rs"]
+mod skill;
+pub use skill::SkillIdentifier;
+
 #[derive(Debug, Default, Deserialize, Serialize)]
 pub struct Skill {
     pub display_name: String,

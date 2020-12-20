@@ -27,14 +27,14 @@ use tokio::{
 
 #[derive(Debug)]
 pub enum Error {
-    Incomplete,
+    Closed,
     IOError(std::io::Error),
     ParseError(String),
 }
 
 impl From<Infallible> for Error {
     fn from(_src: Infallible) -> Error {
-        Error::Incomplete
+        Error::Closed
     }
 }
 
@@ -74,7 +74,7 @@ impl fmt::Display for Error {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         use Error::*;
         match self {
-            Incomplete => "stream ended early".fmt(fmt),
+            Closed => "connection was closed".fmt(fmt),
             IOError(e) => e.fmt(fmt),
             ParseError(e) => e.fmt(fmt),
         }
@@ -98,16 +98,22 @@ impl Connection {
     }
 
     pub async fn read_message(&mut self) -> Result<Option<Message>, Error> {
-        loop {
-            if let Some(message) = self.parse_message()? { return Ok(Some(message)); }
+        // attempt to read data into the buffer
+        // when the following condition is true, the connection has been closed
+        if self.stream.read_buf(&mut self.buffer).await? == 0 { return Err(Error::Closed); }
 
-            if self.stream.read_buf(&mut self.buffer).await? == 0 {
-                match self.buffer.is_empty() {
-                    true => return Ok(None),
-                    false => return Err("connection reset by peer".into()),
-                }
-            }
-        }
+        let mut buf = Cursor::new(&self.buffer[..]);
+
+        if buf.remaining() < std::mem::size_of::<u16>() { return Ok(None); }
+        let len = buf.get_u16() as usize;
+
+        if buf.remaining() < len { return Ok(None); }
+        let data = Bytes::copy_from_slice(&buf.bytes()[..len]);
+        let message = bincode::deserialize(&data)?;
+
+        self.buffer.advance(len);
+
+        Ok(Some(message))
     }
 
     pub async fn write_message(&mut self, message: &Message) -> Result<(), Error> {
@@ -120,28 +126,4 @@ impl Connection {
 
         Ok(())
     }
-
-    fn parse_message(&mut self) -> Result<Option<Message>, Error> {
-        let mut buf = Cursor::new(&self.buffer[..]);
-        let len = get_u16(&mut buf)? as usize;
-
-        if buf.remaining() < len {
-            return Err(Error::Incomplete);
-        }
-
-        let data = Bytes::copy_from_slice(&buf.bytes()[..len]);
-        let read = Cursor::new(&data);
-        let message = bincode::deserialize_from(read)?;
-
-        self.buffer.advance(len);
-        Ok(Some(message))
-    }
-}
-
-fn get_u16(src: &mut Cursor<&[u8]>) -> Result<u16, Error> {
-    if src.remaining() < std::mem::size_of::<u16>() {
-        return Err(Error::Incomplete);
-    }
-
-    Ok(src.get_u16())
 }

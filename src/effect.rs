@@ -20,7 +20,7 @@ pub enum EffectSource<'a> {
     Other(&'a Combatant),
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum SubEffect {
     Damage { aspect: Aspect, scaling: Fraction },
     DOT { aspect: Aspect, scaling: Fraction, lifetime: Lifetime },

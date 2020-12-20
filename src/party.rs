@@ -1,4 +1,7 @@
-use crate::combatant::Combatant;
+use crate::{
+    combatant::Combatant,
+    item::Item,
+};
 
 use serde::{
     Deserialize,
@@ -8,5 +11,5 @@ use serde::{
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Party {
     pub members: Vec<Combatant>,
-    pub inventory: Vec<String>,
+    pub inventory: Vec<Item>,
 }

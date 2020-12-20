@@ -4,13 +4,28 @@ use crate::{
     dot::DOT,
     fraction::Fraction,
     gender::Gender,
-    store::{
-        BODYWEAR_STORE,
-        FOOTWEAR_STORE,
-        HANDWEAR_STORE,
-        HEADWEAR_STORE,
-        LEGWEAR_STORE,
+    bodywear::{
+        Bodywear,
+        BodywearIdentifier,
     },
+    footwear::{
+        Footwear,
+        FootwearIdentifier,
+    },
+    handwear::{
+        Handwear,
+        HandwearIdentifier,
+    },
+    headwear::{
+        Headwear,
+        HeadwearIdentifier,
+    },
+    legwear::{
+        Legwear,
+        LegwearIdentifier,
+    },
+    skill::SkillIdentifier,
+    weapon::WeaponIdentifier,
     modifier::{
         Modifier,
         ModifierExpression,
@@ -26,7 +41,7 @@ use serde::{
 pub struct Combatant {
     pub name: String,
     pub gender: Gender,
-    pub skills: Vec<String>,
+    pub skills: Vec<SkillIdentifier>,
 
     pub agility: u32,
     pub dexterity: u32,
@@ -36,12 +51,12 @@ pub struct Combatant {
     pub vigor: u32,
     pub vitality: u32,
 
-    pub bodywear: String,
-    pub footwear: String,
-    pub handwear: String,
-    pub headwear: String,
-    pub legwear: String,
-    pub weapon: String,
+    pub bodywear: Option<BodywearIdentifier>,
+    pub footwear: Option<FootwearIdentifier>,
+    pub handwear: Option<HandwearIdentifier>,
+    pub headwear: Option<HeadwearIdentifier>,
+    pub legwear: Option<LegwearIdentifier>,
+    pub weapon: Option<WeaponIdentifier>,
 
     pub hp: u32,
     pub fatigue: u32,
@@ -75,6 +90,10 @@ impl Combatant {
 
     pub fn ready(&self) -> bool {
         self.alive() && self.fatigue == 0
+    }
+
+    pub fn ready_up(&mut self) {
+        self.fatigue -= std::cmp::min(self.fatigue, self.agility)
     }
 
     pub fn attribute_raw(&self, attribute: Attribute) -> u32 {
@@ -126,11 +145,11 @@ impl Combatant {
 
     pub fn defense(&self, aspect: Aspect) -> u32 {
         let mut value = 0;
-        if !self.bodywear.is_empty() { value += BODYWEAR_STORE.get(&self.bodywear).unwrap().get_defense(aspect); }
-        if !self.footwear.is_empty() { value += FOOTWEAR_STORE.get(&self.footwear).unwrap().get_defense(aspect); }
-        if !self.handwear.is_empty() { value += HANDWEAR_STORE.get(&self.handwear).unwrap().get_defense(aspect); }
-        if !self.headwear.is_empty() { value += HEADWEAR_STORE.get(&self.headwear).unwrap().get_defense(aspect); }
-        if !self.legwear.is_empty() { value += LEGWEAR_STORE.get(&self.legwear).unwrap().get_defense(aspect); }
+        if let Some(identifier) = self.bodywear { value += <&Bodywear>::from(identifier).defense(aspect); }
+        if let Some(identifier) = self.footwear { value += <&Footwear>::from(identifier).defense(aspect); }
+        if let Some(identifier) = self.handwear { value += <&Handwear>::from(identifier).defense(aspect); }
+        if let Some(identifier) = self.headwear { value += <&Headwear>::from(identifier).defense(aspect); }
+        if let Some(identifier) = self.legwear { value += <&Legwear>::from(identifier).defense(aspect); }
         value
     }
 

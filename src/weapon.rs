@@ -1,5 +1,9 @@
 use crate::effect::Effect;
 
+#[path = "generated/weapon.rs"]
+mod weapon;
+pub use weapon::WeaponIdentifier;
+
 use serde::{
     Deserialize,
     Serialize,

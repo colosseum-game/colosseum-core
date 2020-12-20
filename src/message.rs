@@ -1,6 +1,7 @@
 use crate::{
     combat_event::CombatEvent,
     combat_state::CombatState,
+    target::Target,
 };
 
 use serde::{
@@ -12,4 +13,5 @@ use serde::{
 pub enum Message {
     CombatEvent(CombatEvent),
     CombatState(CombatState),
+    TakeTurn(Target),
 }

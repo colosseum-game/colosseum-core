@@ -1,4 +1,8 @@
-use crate::target::Target;
+use crate::{
+    consumable::ConsumableIdentifier,
+    skill::SkillIdentifier,
+    target::Target,
+};
 
 use serde::{
     Deserialize,
@@ -7,9 +11,8 @@ use serde::{
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum CombatEvent {
-    AttackEvent { targets: Vec<Target> },
-    ConsumableEvent { consumable_identifier: String, targets: Vec<Target> },
-    ForfeitEvent,
+    AttackEvent { source: Target, targets: Vec<Target> },
+    ConsumableEvent { source: Target, targets: Vec<Target>, consumable: ConsumableIdentifier },
+    SkillEvent { source: Target, targets: Vec<Target>, skill: SkillIdentifier },
     SkipEvent,
-    SkillEvent { skill_identifier: String, targets: Vec<Target> },
 }

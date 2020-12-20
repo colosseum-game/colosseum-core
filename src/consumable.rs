@@ -1,3 +1,7 @@
+#[path = "generated/consumable.rs"]
+mod consumable;
+pub use consumable::ConsumableIdentifier;
+
 use crate::effect::Effect;
 
 use serde::{
